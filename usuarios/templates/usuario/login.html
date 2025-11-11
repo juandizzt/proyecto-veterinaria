@@ -1,7 +1,7 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block content %} {% load tailwind_filters %}
 
 <form action="">
-  {{ form.as_p }}
+  {{ form.as_p }} {{ form|crispy }}
   <button type="submit">Iniciar Sesión</button>
 </form>
 
