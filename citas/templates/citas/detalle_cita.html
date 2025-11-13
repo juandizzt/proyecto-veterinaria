@@ -1,0 +1,47 @@
+{% extends 'citas/base_citas.html' %}
+
+{% block title %}Detalle de Cita - {{ cita.mascota }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>👁️ Detalles de la Cita</h2>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+        <div>
+            <h3>📋 Información de la Mascota</h3>
+            <p><strong>Nombre:</strong> {{ cita.mascota }}</p>
+            <p><strong>Tipo:</strong> {{ cita.tipo_mascota }}</p>
+            <p><strong>Servicio:</strong> {{ cita.get_tipo_servicio_display }}</p>
+        </div>
+        
+        <div>
+            <h3>📅 Información de la Cita</h3>
+            <p><strong>Fecha:</strong> {{ cita.fecha_cita }}</p>
+            <p><strong>Hora:</strong> {{ cita.hora_cita }}</p>
+            <p><strong>Agendada el:</strong> {{ cita.creado_en|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <h3>📝 Motivo de la Consulta</h3>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db;">
+            {{ cita.descripcion|linebreaks }}
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+        <div>
+            <h3>👤 Información de Contacto</h3>
+            <p><strong>Propietario:</strong> {{ cita.propietario.get_full_name|default:cita.propietario.username }}</p>
+            <p><strong>Teléfono:</strong> {{ cita.telefono }}</p>
+            <p><strong>Email:</strong> {{ cita.email }}</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; display: flex; gap: 10px;">
+        <a href="{% url 'citas:editar_cita' cita.pk %}" class="btn">✏️ Editar Cita</a>
+        <a href="{% url 'citas:eliminar_cita' cita.pk %}" class="btn btn-danger">❌ Cancelar Cita</a>
+        <a href="{% url 'citas:lista_citas' %}" class="btn">📋 Volver a la Lista</a>
+    </div>
+</div>
+{% endblock %}

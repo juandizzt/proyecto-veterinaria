@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block content %}
+<div>
+  {% if pedido %}
+  <div>
+    <h2>Detalles de la Orden</h2>
+    <span>{{ pedido.usuario.username }}</span>
+  </div>
+  <div>
+    <span>Fecha de la Orden: </span>
+    <span>{{ pedido.pedido_date|date:"F j, Y H:i" }}</span>
+  </div>
+  <div>
+    <h3>Artículos en tu orden:</h3>
+    {% for producto_pedido in pedido.pedidoproducto_set.all %}
+    <div>
+      <div>{{ producto_pedido.producto.nombre }}</div>
+      <div>{{ producto_pedido.producto.precio }}</div>
+      <div>{{ producto_pedido.producto.descripcion }}</div>
+    </div>
+    {% empty %}
+    <div>No hay artículos en el pedido</div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No tiene pedidos activos</p>
+  {% endif %}
+</div>
+{% endblock content %}

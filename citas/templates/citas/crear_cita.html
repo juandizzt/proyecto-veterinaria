@@ -1,0 +1,33 @@
+{% extends 'citas/base_citas.html' %}
+
+{% block title %}Agendar Nueva Cita - Veterinaria{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Agendar Nueva Cita</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+            <small style="color: #666;">{{ field.help_text }}</small>
+            {% endif %}
+            {% if field.errors %}
+            <div style="color: #e74c3c; font-size: 14px; margin-top: 5px;">
+                {{ field.errors }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <div style="margin-top: 20px;">
+            <button type="submit" class="btn btn-success">✅ Agendar Cita</button>
+            <a href="{% url 'citas:lista_citas' %}" class="btn">↩️ Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

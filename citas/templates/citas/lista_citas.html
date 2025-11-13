@@ -1,0 +1,61 @@
+{% extends 'citas/base_citas.html' %} {% block title %}Mis Citas - Veterinaria
+{%endblock %} {% block content %}
+<div class="card">
+  <div
+    style="
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    "
+  >
+    <h2>Mis Citas Agendadas</h2>
+    <a href="{% url 'citas:crear_cita' %}" class="btn btn-success"
+      >➕ Agendar Nueva Cita</a
+    >
+  </div>
+
+  {% if citas %} {% for cita in citas %}
+  <div class="cita-card {% if cita.es_pasada %}cita-pasada{% endif %}">
+    {% if cita.es_pasada %}
+    <div
+      style="
+        background: #f8d7da;
+        color: #721c24;
+        padding: 5px;
+        border-radius: 3px;
+        margin-bottom: 10px;
+      "
+    >
+      ⚠️ Cita pasada
+    </div>
+    {% endif %}
+
+    <h3>{{ cita.mascota }} ({{ cita.tipo_mascota }})</h3>
+    <p>
+      <strong>📅 Fecha:</strong> {{ cita.fecha_cita }} 🕒 {{ cita.hora_cita }}
+    </p>
+    <p><strong>🩺 Servicio:</strong> {{ cita.get_tipo_servicio_display }}</p>
+    <p><strong>📞 Teléfono:</strong> {{ cita.telefono }}</p>
+    <p><strong>📝 Motivo:</strong> {{ cita.descripcion|truncatewords:20 }}</p>
+
+    <div style="margin-top: 15px">
+      <a href="{% url 'citas:detalle_cita' cita.pk %}" class="btn"
+        >👁️ Ver Detalles</a
+      >
+      <a href="{% url 'citas:editar_cita' cita.pk %}" class="btn">✏️ Editar</a>
+      <a href="{% url 'citas:eliminar_cita' cita.pk %}" class="btn btn-danger"
+        >❌ Cancelar</a
+      >
+    </div>
+  </div>
+  {% endfor %} {% else %}
+  <div class="card">
+    <p>No tienes citas agendadas.</p>
+    <a href="{% url 'citas:crear_cita' %}" class="btn btn-success"
+      >Agendar tu primera cita</a
+    >
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

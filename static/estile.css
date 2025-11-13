@@ -1,0 +1,226 @@
+/* Variables de color y alturas para fácil mantenimiento */
+:root {
+    --color-primary: #38a54d; /* Verde principal */
+    --color-secondary: #f0f0f0; /* Gris claro de fondo */
+    --color-text-dark: #333;
+    --color-text-light: #fff;
+    --font-family: Arial, sans-serif;
+    
+    /* Variables para posicionamiento fijo */
+    --top-bar-height: 40px; 
+    --main-nav-height: 60px; 
+    --header-total-height: 100px; /* 40px + 60px */
+    --footer-height: 50px; /* Altura del footer fijo */
+}
+
+/* Reset y estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--color-text-dark);
+    background-color: var(--color-secondary);
+    
+    /* Ajuste del cuerpo para hacer espacio a los elementos fijos */
+    padding-top: var(--header-total-height);
+    padding-bottom: var(--footer-height); 
+    min-height: 100vh;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+ul {
+    list-style: none;
+}
+
+/* ------------------------------------------------ */
+/* ENCABEZADO FIJO */
+/* ------------------------------------------------ */
+
+#fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.main-header {
+    background-color: var(--color-text-light);
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 40px;
+}
+
+.main-nav ul {
+    display: flex;
+    gap: 10px;
+}
+
+.main-nav ul li a {
+    padding: 10px 15px;
+    display: block;
+    font-weight: bold;
+    color: var(--color-text-dark);
+    border-radius: 4px;
+}
+
+.main-nav ul li a:hover,
+.main-nav ul li a.active {
+    color: var(--color-text-light);
+    background-color: var(--color-primary);
+}
+
+/* ------------------------------------------------ */
+/* CONTENIDO PRINCIPAL */
+/* ------------------------------------------------ */
+
+#main-content {
+    min-height: calc(100vh - var(--header-total-height) - var(--footer-height));
+}
+
+.hero-section {
+    height: 400px;
+    background-image: url('static/imagenes/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.info-sections-container {
+    padding: 60px 0;
+    background-color: white;
+}
+
+/* ------------------------------------------------ */
+/* PIE DE PÁGINA FIJO */
+/* ------------------------------------------------ */
+
+#fixed-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    padding: 15px 0;
+    height: var(--footer-height);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+}
+
+.contact-info {
+    flex: 1;
+}
+
+.contact-details {
+    flex: 1;
+    text-align: center;
+}
+
+.contact-details p {
+    line-height: 1.4;
+    margin: 2px 0;
+}
+
+.social-icons-footer {
+    flex: 1;
+    text-align: right;
+}
+
+.social-icons-footer a {
+    color: var(--color-text-light);
+    font-size: 1.3em;
+    margin-left: 15px;
+    transition: transform 0.3s ease;
+}
+
+.social-icons-footer a:hover {
+    transform: scale(1.2);
+}
+
+/* ------------------------------------------------ */
+/* RESPONSIVE */
+/* ------------------------------------------------ */
+
+@media (max-width: 768px) {
+    .nav-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .main-nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .contact-info,
+    .contact-details,
+    .social-icons-footer {
+        flex: none;
+        width: 100%;
+    }
+    
+    .social-icons-footer {
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    .hero-section {
+        height: 300px;
+    }
+}

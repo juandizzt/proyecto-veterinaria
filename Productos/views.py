@@ -17,7 +17,7 @@ class ProductoFormView(FormView):
 
 class ProductoListView(ListView):
     model = Producto
-    template_name = "productos/agendar.html"
+    template_name = "productos/lista.html"
     context_object_name = "productos"
 
     def get_queryset(self):

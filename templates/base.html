@@ -1,12 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Mi Proyecto</title>
+    <link rel="stylesheet" href="../static/estile.css" />
   </head>
   <body>
-    {% block content %} {% endblock content %}
+    {% block content %}
+    <header id="fixed-header">
+      <div class="main-header">
+        <div class="container nav-content">
+          <div class="logo">
+            <a href="#">
+              <img
+                src="../static/imagenes/praderas.peg"
+                alt="Logo La Pradera"
+                style="height: 40px"
+              />
+            </a>
+          </div>
+          <nav class="main-nav">
+            <ul>
+              <li>
+                <a href="#" data-url="INICIO_URL" class="nav-link active"
+                  >Inicio</a
+                >
+              </li>
+              <li>
+                <a href="#" data-url="NOSOTROS_URL" class="nav-link"
+                  >Nosotros</a
+                >
+              </li>
+              <li>
+                <a href="#" data-url="PRODUCTOS_URL" class="nav-link"
+                  >Productos</a
+                >
+              </li>
+              <li>
+                <a href="#" data-url="CITAS_URL" class="nav-link">Citas</a>
+              </li>
+              <li>
+                <a href="#" data-url="CONTACTO_URL" class="nav-link"
+                  >Contactanos</a
+                >
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero-section">
+        <div class="hero-overlay"></div>
+      </section>
+      <section class="info-sections-container">
+        <!-- Contenido de las secciones irá aquí -->
+      </section>
+    </main>
+    <footer id="fixed-footer">
+      <div class="container footer-content">
+        <div class="contact-info">
+          <p>UBICACION CARRERA 144 BARRIO EL SALADO</p>
+        </div>
+        <div class="contact-details">
+          <p>TELEFONO: 3212345673</p>
+          <p>CORREO: LAPRADERAA@GMAIL.COM</p>
+        </div>
+        <div class="social-icons-footer">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </footer>
+    {% endblock content %}
   </body>
 </html>
