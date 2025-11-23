@@ -1,5 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, CreateView
+from django.views.generic import UpdateView, DeleteView
+from .models import PedidoProducto
 from .models import Pedido
 from django.urls import reverse_lazy
 from .forms import PedidoProductoForm
@@ -27,6 +29,22 @@ class CrearPedidoProductosView(LoginRequiredMixin, CreateView):
             usuario=self.request.user,
         )
         form.instance.pedido = pedido
-        form.instance.cantidad = 1
         form.save()
         return super().form_valid(form)
+    
+class EditarPedidoProductoView(LoginRequiredMixin, UpdateView):
+    model = PedidoProducto
+    template_name = "pedidos/editar_pedido.html"
+    form_class = PedidoProductoForm
+    success_url = reverse_lazy("mi_pedido")
+
+    def get_queryset(self):
+        return PedidoProducto.objects.filter(pedido__usuario=self.request.user, pedido__is_active=True)
+
+class EliminarPedidoProductoView(LoginRequiredMixin, DeleteView):
+    model = PedidoProducto
+    template_name = "pedidos/eliminar_pedido.html"
+    success_url = reverse_lazy("mi_pedido")
+
+    def get_queryset(self):
+        return PedidoProducto.objects.filter(pedido__usuario=self.request.user, pedido__is_active=True)

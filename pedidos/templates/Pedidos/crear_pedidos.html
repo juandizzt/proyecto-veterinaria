@@ -11,6 +11,12 @@
       <div>{{ form.producto.errors }}</div>
       {% endif %}
     </div>
+    <div>
+      <label for="{{ form.cantidad.id_for_label }}">Cantidad:</label>
+      {{ form.cantidad }} {% if form.cantidad.errors %}
+      <div>{{ form.cantidad.errors }}</div>
+      {% endif %}
+    </div>
 
     <button type="submit">Agregar al Pedido</button>
     <a href="{% url 'mi_pedido' %}">Ver Mi Pedido</a>

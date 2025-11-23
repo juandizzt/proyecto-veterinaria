@@ -11,6 +11,9 @@ class Pedido(models.Model):
     def __str__(self):
         return f"order {self.id} by {self.usuario}"
 
+    @property
+    def total(self):
+        return sum(item.subtotal for item in self.pedidoproducto_set.all())
 
 class PedidoProducto(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
@@ -19,6 +22,9 @@ class PedidoProducto(models.Model):
 
     def __str__(self) -> str:
         return f"{self.pedido} pedido {self.producto}"
-
+    
+    @property
+    def subtotal(self):
+        return self.producto.precio * self.cantidad
 
 # Create your models here.
