@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block content %}
+<div>
+  <h2>Agregar Producto al Pedido</h2>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div>
+      <label for="{{ form.producto.id_for_label }}">Producto:</label>
+      {{ form.producto }} {% if form.producto.errors %}
+      <div>{{ form.producto.errors }}</div>
+      {% endif %}
+    </div>
+
+    <button type="submit">Agregar al Pedido</button>
+    <a href="{% url 'mi_pedido' %}">Ver Mi Pedido</a>
+  </form>
+</div>
+{% endblock %}

@@ -7,4 +7,4 @@ class Usuario(models.Model):
     password = models.CharField(max_length=100, verbose_name="Contraseña")
 
     def __str__(self):
-        return super().__str__()
+        return self.nombre

@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block content %}
+<div>
+  {% if pedido %}
+  <div>
+    <h2>Detalles de la Orden</h2>
+    <span>{{ pedido.usuario.username }}</span> nota: pedido fue la palabra
+    designada para acceder desde la vista, la palabra ususario viene de la clase
+    Pedido.
+  </div>
+  <div>
+    <span>Fecha de la Orden: </span>
+    <span>{{ pedido.pedido_date|date:"F j, Y H:i" }}</span>
+  </div>
+  <div>
+    <h3>Artículos en tu orden:</h3>
+    {% for producto_pedido in pedido.pedidoproducto_set.all %}
+    <!--Recorre los productos en la
+orden-->
+    <div>
+      <div>{{ producto_pedido.producto.nombre }}</div>
+      ><!--accede al nombre del producto a
+traves de la relacion de Pedidoproducto (producto) y Producto(nombre)-->
+      <div>{{ producto_pedido.producto.precio }}</div>
+      <div>{{ producto_pedido.producto.descripcion }}</div>
+    </div>
+    {% empty %}
+    <div>No hay artículos en el pedido</div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p>No tiene pedidos activos</p>
+  {% endif %}
+</div>
+{% endblock content %}

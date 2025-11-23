@@ -110,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "es-co"
 
 TIME_ZONE = "UTC"
 
@@ -135,4 +135,9 @@ import os
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-LOGIN_URL = "loguin"
+LOGIN_URL = "login"
+
+LOGIN_REDIRECT_URL = "lista"
+LOGOUT_REDIRECT_URL = "/login/"
+
+
