@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "citas",
     "crispy_forms",
     "crispy_tailwind",
+    "historialM",
 ]
 
 MIDDLEWARE = [
@@ -118,6 +119,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

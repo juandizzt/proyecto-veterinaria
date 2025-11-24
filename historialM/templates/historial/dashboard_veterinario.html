@@ -1,0 +1,43 @@
+{% extends 'base.html' %} {% block title %}Dashboard Veterinario{% endblock %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8">🩺 Dashboard Veterinario</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="text-xl font-semibold mb-2">Total Historiales</h3>
+      <p class="text-3xl font-bold text-blue-600">{{ total_historiales }}</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="text-xl font-semibold mb-2">Casos Urgentes</h3>
+      <p class="text-3xl font-bold text-red-600">{{ historiales_urgentes }}</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h3 class="text-xl font-semibold mb-2">Esta Semana</h3>
+      <p class="text-3xl font-bold text-green-600">
+        {{ historiales_recientes }}
+      </p>
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-2xl font-bold mb-4">Acciones Rápidas</h2>
+    <div class="flex gap-4">
+      <a
+        href="{% url 'historialM:crear_historial' %}"
+        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        ➕ Crear Nuevo Historial
+      </a>
+      <a
+        href="{% url 'historialM:lista_historiales' %}"
+        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+      >
+        📋 Ver Todos los Historiales
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %} {% block title %}Lista de Historiales Médicos{%
+endblock %} {% block content %}
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8">📋 Historiales Médicos</h1>
+
+  <div class="mb-4">
+    <a
+      href="{% url 'historialM:crear_historial' %}"
+      class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+    >
+      ➕ Nuevo Historial
+    </a>
+  </div>
+
+  {% if historiales %}
+  <div class="grid gap-4">
+    {% for historial in historiales %}
+    <div
+      class="bg-white p-6 rounded-lg shadow {% if historial.es_urgente %}border-l-4 border-red-500{% endif %}"
+    >
+      <h3 class="text-xl font-semibold">{{ historial.mascota }}</h3>
+      <p><strong>Propietario:</strong> {{ historial.propietario.username }}</p>
+      <p><strong>Fecha:</strong> {{ historial.fecha_consulta }}</p>
+      <p>
+        <strong>Diagnóstico:</strong> {{ historial.diagnostico|truncatewords:20
+        }}
+      </p>
+
+      <div class="mt-4 flex gap-2">
+        <a
+          href="{% url 'historialM:detalle_historial' historial.pk %}"
+          class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm"
+        >
+          👁️ Ver
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white p-6 rounded-lg shadow text-center">
+    <p class="text-lg">No hay historiales médicos registrados.</p>
+    <a
+      href="{% url 'historialM:crear_historial' %}"
+      class="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mt-4"
+    >
+      ➕ Crear el primer historial
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
