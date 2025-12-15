@@ -1,7 +1,7 @@
+# citas/forms.py
 from django import forms
 from .models import Cita
 from datetime import date
-
 
 class CitaForm(forms.ModelForm):
     class Meta:
@@ -83,3 +83,15 @@ class CitaForm(forms.ModelForm):
                 )
 
         return cleaned_data
+
+# COMENTAR O ELIMINAR ESTE FORMULARIO YA QUE NO EXISTE EL CAMPO 'estado'
+# class CambiarEstadoForm(forms.ModelForm):
+#     class Meta:
+#         model = Cita
+#         fields = ['estado']
+#         widgets = {
+#             'estado': forms.Select(attrs={'class': 'form-control'})
+#         }
+#         labels = {
+#             'estado': 'Cambiar Estado'
+#         }

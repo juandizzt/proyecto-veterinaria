@@ -11,7 +11,7 @@
   >
     <h2>Mis Citas Agendadas</h2>
     <a href="{% url 'citas:crear_cita' %}" class="btn btn-success"
-      >➕ Agendar Nueva Cita</a
+      > Agendar Nueva Cita</a
     >
   </div>
 
@@ -33,19 +33,19 @@
 
     <h3>{{ cita.mascota }} ({{ cita.tipo_mascota }})</h3>
     <p>
-      <strong>📅 Fecha:</strong> {{ cita.fecha_cita }} 🕒 {{ cita.hora_cita }}
+      <strong> Fecha:</strong> {{ cita.fecha_cita }}  {{ cita.hora_cita }}
     </p>
-    <p><strong>🩺 Servicio:</strong> {{ cita.get_tipo_servicio_display }}</p>
-    <p><strong>📞 Teléfono:</strong> {{ cita.telefono }}</p>
-    <p><strong>📝 Motivo:</strong> {{ cita.descripcion|truncatewords:20 }}</p>
+    <p><strong> Servicio:</strong> {{ cita.get_tipo_servicio_display }}</p>
+    <p><strong> Teléfono:</strong> {{ cita.telefono }}</p>
+    <p><strong> Motivo:</strong> {{ cita.descripcion|truncatewords:20 }}</p>
 
     <div style="margin-top: 15px">
       <a href="{% url 'citas:detalle_cita' cita.pk %}" class="btn"
-        >👁️ Ver Detalles</a
+        > Ver Detalles</a
       >
-      <a href="{% url 'citas:editar_cita' cita.pk %}" class="btn">✏️ Editar</a>
+      <a href="{% url 'citas:editar_cita' cita.pk %}" class="btn"> Editar</a>
       <a href="{% url 'citas:eliminar_cita' cita.pk %}" class="btn btn-danger"
-        >❌ Cancelar</a
+        > Cancelar</a
       >
     </div>
   </div>

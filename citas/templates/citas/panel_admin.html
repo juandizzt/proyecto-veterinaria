@@ -1,0 +1,73 @@
+{% extends 'citas/base_citas.html' %} {% block title %}Panel de Administración -
+Veterinaria{% endblock %} {% block content %}
+<div class="card">
+  <h2>Panel de Administración</h2>
+
+  <div
+    style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    "
+  >
+    <div class="admin-card">
+      <h3>Usuarios</h3>
+      <p>Gestiona los usuarios del sistema</p>
+      <a
+        href="{% url 'admin:auth_user_changelist' %}"
+        class="btn"
+        target="_blank"
+      >
+        🔧 Gestionar Usuarios
+      </a>
+    </div>
+
+    <div class="admin-card">
+      <h3>Historial General</h3>
+      <p>Ver todas las citas del sistema</p>
+      <a href="{% url 'citas:historial_citas' %}" class="btn">
+        📋 Ver Historial Completo
+      </a>
+    </div>
+
+    <div class="admin-card">
+      <h3>Mascotas</h3>
+      <p>Ver listado de todas las mascotas</p>
+      <a href="{% url 'citas:listado_mascotas' %}" class="btn">
+        🐾 Listado de Mascotas
+      </a>
+    </div>
+
+    <div class="admin-card">
+      <h3>Citas del Día</h3>
+      <p>Citas programadas para hoy</p>
+      <a href="#" class="btn" onclick="alert('Funcionalidad en desarrollo')">
+        📅 Ver Citas Hoy
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .admin-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #3498db;
+    text-align: center;
+  }
+
+  .admin-card h3 {
+    color: #3498db;
+    margin-bottom: 10px;
+  }
+
+  .admin-card p {
+    color: #666;
+    margin-bottom: 20px;
+    min-height: 40px;
+  }
+</style>
+{% endblock %}

@@ -1,9 +1,15 @@
+# pedidos/urls.py - VERSIÓN DEFINITIVA
 from django.urls import path
-from .views import CrearPedidoProductosView,MypedidoView, EditarPedidoProductoView, EliminarPedidoProductoView
+from . import views
 
 urlpatterns = [
-    path("mi-pedido", MypedidoView.as_view(), name="mi_pedido"),
-    path('agregar_producto/', CrearPedidoProductosView.as_view(), name='agregar_producto'),
-    path('editar_producto/<int:pk>/', EditarPedidoProductoView.as_view(), name='editar_producto'),
-    path('eliminar_producto/<int:pk>/', EliminarPedidoProductoView.as_view(), name='eliminar_producto'),
+    # Vista principal del pedido
+    path('mi-pedido/', views.mi_pedido_funcion, name='mi_pedido'),
+    
+    # AJAX para agregar productos
+    path('agregar-producto-ajax/', views.agregar_producto_ajax, name='agregar_producto_ajax'),
+    
+    # Acciones sobre el pedido
+    path('eliminar/<int:detalle_id>/', views.eliminar_detalle, name='eliminar_detalle'),
+    path('actualizar/<int:detalle_id>/', views.actualizar_cantidad, name='actualizar_cantidad'),
 ]

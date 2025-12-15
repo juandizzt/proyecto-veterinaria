@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from citas.models import Cita
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
 #Permissionsdenied importa una exceptions para denegar el acceso programaticamente
 # Create your models here.
 
@@ -33,22 +34,14 @@ class HistorialMedico(models.Model):
     )
     mascota = models.CharField(max_length=100, verbose_name="Nombre de la Mascota")
     propietario = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        verbose_name="Propietario",
-        related_name="historiales_medicos"
+        related_name='historiales_propietario'
     )
-    tipo_mascota = models.CharField(max_length=50, verbose_name="Tipo de Mascota")
-
-    #informacion medica
-
     veterinario = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        verbose_name="Veterinario",
-        related_name="historiales_atendidos",
-        limit_choices_to={'groups__name': 'Veterinarios'}
-        #solamente acepta usuarios del grupo veterinarios
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='historiales_veterinario'
     )
     fecha_consulta = models.DateField(verbose_name="Fecha de consulta")
     tipo_consulta = models.CharField(

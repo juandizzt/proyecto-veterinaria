@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -26,6 +27,8 @@ urlpatterns = [
     path("usuarios/", include("usuarios.urls")),
     path("pedidos/", include("pedidos.urls")),
     path("citas/", include("citas.urls")),
+    path('inicio/', views.inicio, name='inicio'),
+    path('nosotros/', views.nosotros, name='nosotros'),
     path("historialM/", include("historialM.urls")),
 ] 
 if settings.DEBUG:

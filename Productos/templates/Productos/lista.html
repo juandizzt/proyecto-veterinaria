@@ -1,81 +1,914 @@
-{% extends "base.html" %} {% block content %}
-<h1>Lista de productos</h1>
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Pradera - Productos</title>
+    
+    <!-- Agregar jQuery (puedes usar CDN o descargarlo) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <style>
+        /* Estilos generales - NO CAMBIADOS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-{% if user.is_authenticated %}
-<p>Bienvenido, {{ user.username }}</p>
-<div style="margin-bottom: 20px">
-  <!-- Botón para agregar productos al pedido -->
-  <a
-    href="{% url 'agregar_producto' %}"
-    style="
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #4caf50;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-weight: bold;
-    "
-  >
-    Agregar Productos al Pedido
-  </a>
-</div>
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-<form method="POST" action="{% url 'logout' %}">
-  {% csrf_token %}
-  <button
-    type="submit"
-    style="
-      padding: 5px 10px;
-      background-color: #f44336;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-    "
-  >
-    Cerrar Sesión
-  </button>
-</form>
-{% else %}
-<p>No has iniciado sesión.</p>
-{% endif %} {% if productos %}
-<ul>
-  {% for producto in productos %}
-  <li>
-    <strong>{{ producto.nombre }}</strong> - ${{ producto.precio }}
-    <p>{{ producto.descripcion }}</p>
-    <p>Stock: {{ producto.stock }}</p>
-    {% if producto.imagen %}
-    <img
-      src="{{ producto.imagen.url }}"
-      alt="{{ producto.nombre }}"
-      width="100"
-    />
-    {% else %}
-    <p>Sin imagen</p>
+        /* Header fijo - COLOR VERDE ACTUALIZADO */
+        header {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Contenedor del logo rectangular */
+        .logo-img {
+            width: 160px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+            background-color: white;
+        }
+
+        /* Imagen dentro del logo */
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            padding: 2px;
+        }
+
+        .logo h1 {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: white !important;
+            padding-bottom: 0 !important;
+            border-bottom: none !important;
+            text-decoration: none !important;
+            line-height: 1;
+            margin: 0;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover:after {
+            width: 80%;
+            left: 10%;
+        }
+
+        /* Información del usuario en el header */
+        .user-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: 2rem;
+            padding-left: 2rem;
+            border-left: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .user-welcome {
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .user-welcome strong {
+            color: #E8F5E9;
+        }
+
+        .btn-header {
+            padding: 8px 16px;
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-header:hover {
+            background-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Botón de iniciar sesión en el header - COLOR VERDE */
+        .btn-login-header {
+            padding: 8px 16px;
+            background-color: #4CAF50; /* VERDE */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+
+        .btn-login-header:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* Botón de carrito flotante */
+        .carrito-flotante {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 999;
+            border: none;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+
+        .carrito-flotante:hover {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .carrito-flotante:active {
+            transform: scale(0.95);
+        }
+
+        /* Contador de items en el carrito */
+        .carrito-contador {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Contenido principal */
+        .main-content {
+            flex: 1;
+            padding: 120px 2rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Estilos para el título principal */
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            border-bottom: 3px solid #66BB6A;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Botones */
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .btn-logout {
+            background-color: #e74c3c;
+        }
+
+        .btn-logout:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-add {
+            background-color: #66BB6A;
+        }
+
+        .btn-add:hover {
+            background-color: #4CAF50;
+        }
+
+        /* LISTA DE PRODUCTOS - GRID DE 3 COLUMNAS */
+        .productos-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .producto-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #66BB6A;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .producto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .producto-card h3 {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            min-height: 3rem;
+            line-height: 1.3;
+        }
+
+        .producto-precio {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 0.5rem 0;
+        }
+
+        .producto-descripcion {
+            color: #666;
+            margin: 0.8rem 0;
+            line-height: 1.5;
+            flex-grow: 1;
+            font-size: 0.9rem;
+        }
+
+        .producto-stock {
+            color: #7f8c8d;
+            font-weight: bold;
+            margin: 0.8rem 0;
+            font-size: 0.85rem;
+        }
+
+        .producto-imagen {
+            max-width: 100px;
+            border-radius: 8px;
+            margin: 0.8rem 0;
+            align-self: center;
+        }
+
+        .btn-container {
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .btn-add {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        /* Botón para redirigir al login cuando no hay sesión - COLOR VERDE */
+        .btn-login-redirect {
+            background-color: #4CAF50; /* VERDE */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-login-redirect:hover {
+            background-color: #45a049;
+        }
+
+        /* Footer fijo - COLOR VERDE ACTUALIZADO */
+        footer {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            gap: 1.5rem;
+        }
+
+        .footer-content div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-content strong {
+            color: #E8F5E9;
+            font-weight: 600;
+        }
+
+        /* Mensaje cuando no hay productos */
+        .no-products {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: #7f8c8d;
+        }
+
+        /* Estilos para el modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 0.5rem;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .cantidad-input {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .cantidad-input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .btn-modal {
+            padding: 10px 20px;
+            margin: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-confirmar {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-confirmar:hover {
+            background-color: #45a049;
+        }
+
+        .btn-cancelar {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-cancelar:hover {
+            background-color: #c0392b;
+        }
+
+        .mensaje-exito {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            display: none;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .productos-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .productos-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .producto-card {
+                padding: 1.2rem;
+            }
+            
+            .producto-card h3 {
+                font-size: 1.1rem;
+            }
+            
+            .producto-imagen {
+                max-width: 80px;
+            }
+
+            .nav {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .user-header {
+                margin-left: 0;
+                padding-left: 0;
+                border-left: none;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .carrito-flotante {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+
+            .logo-img {
+                width: 120px;
+                height: 50px;
+            }
+
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header fijo -->
+    <header>
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-img">
+                    <img src="{% static 'imagenes/praderas.jpg' %}" alt="Logo Veterinaria La Pradera">
+                </div>
+                <h1>La Pradera</h1>
+            </div>
+            
+            <div class="nav-links">
+                <a href="{% url 'inicio' %}">Inicio</a>
+                <a href="{% url 'nosotros' %}">Nosotros</a>
+                <a href="#" style="background-color: rgba(255,255,255,0.3);">Productos</a>
+                <a href="{% url 'citas:lista_citas' %}">Citas</a>
+                
+                <!-- Información del usuario en el header -->
+                {% if user.is_authenticated %}
+                <div class="user-header">
+                    <span class="user-welcome">Bienvenido <strong>{{ user.username }}</strong></span>
+                    <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'inicio' %}">
+                        <button type="submit" class="btn-header" onclick="return confirm('¿Estás seguro de que quieres cerrar sesión?')">
+                            Cerrar Sesión
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="user-header">
+                    <a href="{% url 'login' %}" class="btn-login-header">Iniciar Sesión</a>
+                </div>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <!-- Botón de carrito flotante -->
+    {% if user.is_authenticated %}
+    <a href="{% url 'mi_pedido' %}" class="carrito-flotante">
+        🛒
+        <span class="carrito-contador">{{ carrito_count|default:0 }}</span>
+    </a>
     {% endif %}
 
-    <!-- Botón para agregar este producto específico al pedido -->
-    <a
-      href="{% url 'agregar_producto' %}?producto_id={{ producto.codigo }}"
-      style="
-        display: inline-block;
-        margin-top: 10px;
-        padding: 5px 10px;
-        background-color: #2196f3;
-        color: white;
-        text-decoration: none;
-        border-radius: 3px;
-        font-size: 14px;
-      "
-    >
-      Agregar al Pedido
-    </a>
-  </li>
-  <hr />
-  {% endfor %}
-</ul>
-{% else %}
-<p>No hay productos disponibles.</p>
-{% endif %} {% endblock content %}
+    <!-- Modal para seleccionar cantidad -->
+    <div id="modalCantidad" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Seleccionar Cantidad</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div id="modalProductoInfo"></div>
+            <input type="number" id="cantidadProducto" class="cantidad-input" min="1" value="1">
+            <div>
+                <button id="btnConfirmar" class="btn-modal btn-confirmar">Agregar al Pedido</button>
+                <button id="btnCancelar" class="btn-modal btn-cancelar">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <div id="mensajeExito" class="mensaje-exito">
+        Producto agregado al pedido exitosamente!
+    </div>
+
+    <!-- Contenido principal -->
+    <main class="main-content">
+        <h1>Lista de productos</h1>
+
+        {% if productos %}
+        <div class="productos-container">
+            {% for producto in productos %}
+            <div class="producto-card" data-producto-id="{{ producto.codigo }}">
+                <h3>{{ producto.nombre }}</h3>
+                <div class="producto-precio">${{ producto.precio }}</div>
+                <p class="producto-descripcion">{{ producto.descripcion }}</p>
+                <p class="producto-stock" id="stock-{{ producto.codigo }}">Stock: {{ producto.stock }}</p>
+                
+                {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="producto-imagen">
+                {% else %}
+                <p style="color: #95a5a6;">Sin imagen</p>
+                {% endif %}
+
+                <div class="btn-container">
+                    {% if user.is_authenticated %}
+                    <button class="btn btn-add agregar-pedido" 
+                            data-producto-id="{{ producto.codigo }}"
+                            data-producto-nombre="{{ producto.nombre }}"
+                            data-producto-precio="{{ producto.precio }}"
+                            data-producto-stock="{{ producto.stock }}">
+                        Agregar al Pedido
+                    </button>
+                    {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn-login-redirect">Inicia sesión para comprar</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-products">
+            <p>No hay productos disponibles.</p>
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer fijo -->
+    <footer>
+        <div class="footer-content">
+            <div>🏠︎<strong>Ubicación:</strong> Carrea 144 Barrio El Salado</div>
+            <div>☏<strong>Telefono:</strong> 3212345673</div>
+            <div>✉<strong>Correo:</strong> lapradera@gmail.com</div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+        <!-- JavaScript - SOLO AGREGAR VALIDACIONES -->
+        <!-- JavaScript CORREGIDO -->
+    <script>
+        $(document).ready(function() {
+            let productoSeleccionado = null;
+            const modal = $('#modalCantidad');
+            const mensajeExito = $('#mensajeExito');
+
+            // Abrir modal cuando se hace clic en "Agregar al Pedido"
+            $('.agregar-pedido').click(function() {
+                productoSeleccionado = {
+                    id: $(this).data('producto-id'),
+                    nombre: $(this).data('producto-nombre'),
+                    precio: $(this).data('producto-precio'),
+                    stock: $(this).data('producto-stock')
+                };
+
+                console.log('Producto seleccionado:', productoSeleccionado); // Para debug
+
+                // ✅ VALIDACIÓN 1: Verificar si el producto tiene stock
+                if (productoSeleccionado.stock <= 0) {
+                    alert('❌ Este producto no tiene stock disponible');
+                    return;
+                }
+
+                // Actualizar información del producto en el modal
+                $('#modalProductoInfo').html(`
+                    <p><strong>Producto:</strong> ${productoSeleccionado.nombre}</p>
+                    <p><strong>Precio:</strong> $${productoSeleccionado.precio}</p>
+                    <p><strong>Stock disponible:</strong> ${productoSeleccionado.stock} unidades</p>
+                `);
+
+                // Resetear cantidad y establecer máximo
+                $('#cantidadProducto').val(1).attr('max', productoSeleccionado.stock);
+                
+                // Mostrar modal
+                modal.show();
+            });
+
+            // Cerrar modal
+            $('.close, #btnCancelar').click(function() {
+                modal.hide();
+                productoSeleccionado = null;
+            });
+
+            // Cerrar modal al hacer clic fuera
+            $(window).click(function(event) {
+                if (event.target == modal[0]) {
+                    modal.hide();
+                    productoSeleccionado = null;
+                }
+            });
+
+            // ✅ FUNCIÓN DE VALIDACIÓN COMPLETA
+            function validarCompra(cantidad, stock) {
+                const errores = [];
+                
+                // Validar que la cantidad sea un número válido
+                if (isNaN(cantidad) || cantidad === '') {
+                    errores.push('La cantidad debe ser un número');
+                }
+                
+                // Validar que la cantidad sea positiva
+                if (cantidad <= 0) {
+                    errores.push('La cantidad debe ser mayor a 0');
+                }
+                
+                // Validar que la cantidad sea un número entero
+                if (!Number.isInteger(cantidad)) {
+                    errores.push('La cantidad debe ser un número entero');
+                }
+                
+                // Validar que haya suficiente stock
+                if (cantidad > stock) {
+                    errores.push(`No hay suficiente stock. Stock disponible: ${stock}`);
+                }
+                
+                return errores;
+            }
+
+            // Confirmar agregar al pedido
+            $('#btnConfirmar').click(function() {
+                if (!productoSeleccionado) {
+                    alert('❌ No hay producto seleccionado');
+                    return;
+                }
+
+                const cantidad = parseInt($('#cantidadProducto').val());
+                const stock = productoSeleccionado.stock;
+
+                console.log('Enviando al servidor:', {
+                    producto_id: productoSeleccionado.id,
+                    cantidad: cantidad,
+                    tipo_id: typeof productoSeleccionado.id
+                });
+
+                // ✅ VALIDACIONES COMPLETAS
+                const errores = validarCompra(cantidad, stock);
+                
+                if (errores.length > 0) {
+                    alert('❌ Error de validación:\n' + errores.join('\n'));
+                    return;
+                }
+
+                // Enviar petición AJAX
+                $.ajax({
+                    url: '{% url "agregar_producto_ajax" %}',
+                    type: 'POST',
+                    data: {
+                        'producto_id': productoSeleccionado.id,
+                        'cantidad': cantidad,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        console.log('Respuesta del servidor:', response);
+                        
+                        if (response.success) {
+                            // Mostrar mensaje de éxito
+                            mensajeExito.fadeIn();
+                            setTimeout(function() {
+                                mensajeExito.fadeOut();
+                            }, 3000);
+                            
+                            // Actualizar contador del carrito
+                            if (response.carrito_count !== undefined) {
+                                $('.carrito-contador').text(response.carrito_count);
+                            }
+                            
+                            // Actualizar stock en la vista
+                            if (response.nuevo_stock !== undefined) {
+                                $(`#stock-${productoSeleccionado.id}`).text(`Stock: ${response.nuevo_stock}`);
+                                
+                                // Actualizar el stock en los botones
+                                $(`.agregar-pedido[data-producto-id="${productoSeleccionado.id}"]`)
+                                    .data('producto-stock', response.nuevo_stock);
+                                
+                                // ✅ DESHABILITAR BOTÓN SI STOCK LLEGA A 0
+                                if (response.nuevo_stock <= 0) {
+                                    $(`.agregar-pedido[data-producto-id="${productoSeleccionado.id}"]`)
+                                        .prop('disabled', true)
+                                        .text('Sin Stock');
+                                }
+                            }
+                            
+                            // Cerrar modal
+                            modal.hide();
+                            productoSeleccionado = null;
+                            
+                        } else {
+                            // ✅ MANEJO DE ERRORES DEL SERVIDOR
+                            if (response.error && response.error.includes('stock')) {
+                                alert('❌ ' + response.error);
+                                // Actualizar stock en caso de error
+                                if (response.nuevo_stock !== undefined) {
+                                    $(`#stock-${productoSeleccionado.id}`).text(`Stock: ${response.nuevo_stock}`);
+                                }
+                            } else {
+                                alert('Error: ' + response.error);
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // ✅ MANEJO DE ERRORES DE CONEXIÓN
+                        console.error('Error AJAX:', error, xhr.responseText);
+                        alert('❌ Error al conectar con el servidor. Verifica tu conexión.');
+                    }
+                });
+            });
+
+            // ✅ VALIDACIÓN EN TIEMPO REAL AL TECLEAR
+            $('#cantidadProducto').on('input', function() {
+                if (!productoSeleccionado) return;
+                
+                let valor = parseInt($(this).val());
+                const stock = productoSeleccionado.stock;
+                
+                // Si no es un número válido, establecer a 1
+                if (isNaN(valor) || valor < 1) {
+                    $(this).val(1);
+                    return;
+                }
+                
+                // Si excede el stock, ajustar al máximo
+                if (valor > stock) {
+                    $(this).val(stock);
+                    alert(`⚠️ Máximo ${stock} unidades disponibles`);
+                }
+                
+                // Si es decimal, redondear
+                if (!Number.isInteger(valor)) {
+                    $(this).val(Math.floor(valor));
+                }
+            });
+            
+            // ✅ VALIDACIÓN AL PERDER EL FOCO
+            $('#cantidadProducto').on('blur', function() {
+                if (!productoSeleccionado) return;
+                
+                let valor = parseInt($(this).val());
+                const stock = productoSeleccionado.stock;
+                
+                if (isNaN(valor) || valor < 1) {
+                    $(this).val(1);
+                }
+                
+                if (valor > stock) {
+                    $(this).val(stock);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

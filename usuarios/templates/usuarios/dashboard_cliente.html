@@ -1,0 +1,105 @@
+<!-- usuarios/templates/usuarios/dashboard_cliente.html -->
+{% extends "base.html" %} {% block content %}
+
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6 text-green-700">Mi Dashboard</h1>
+
+  <!-- Bienvenida -->
+  <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">
+      ¡Hola, {{ user.first_name }}!
+    </h2>
+    <p class="text-gray-600">Bienvenido a tu panel de cliente en La Pradera</p>
+  </div>
+
+  <!-- Mis mascotas -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Mis Mascotas -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-bold mb-4 text-gray-800 flex items-center">
+        <span class="mr-2">🐾</span> Mis Mascotas
+      </h2>
+      {% if mis_mascotas %}
+      <div class="space-y-4">
+        {% for mascota in mis_mascotas %}
+        <div class="border rounded-lg p-4 hover:bg-gray-50 transition">
+          <h3 class="font-semibold text-lg">{{ mascota.nombre }}</h3>
+          <p class="text-gray-600">
+            {{ mascota.especie }} - {{ mascota.raza }}
+          </p>
+          <p class="text-sm text-gray-500">Edad: {{ mascota.edad }} años</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-gray-500 italic">No tienes mascotas registradas.</p>
+      <a
+        href="{% url 'agregar_mascota' %}"
+        class="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+      >
+        Registrar Mascota
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- Mis Citas Próximas -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-bold mb-4 text-gray-800 flex items-center">
+        <span class="mr-2">📅</span> Próximas Citas
+      </h2>
+      {% if citas_proximas %}
+      <div class="space-y-4">
+        {% for cita in citas_proximas %}
+        <div class="border rounded-lg p-4 hover:bg-gray-50 transition">
+          <h3 class="font-semibold">{{ cita.servicio }}</h3>
+          <p class="text-gray-600">
+            {{ cita.fecha_cita|date:"d/m/Y" }} a las {{
+            cita.hora_cita|time:"H:i" }}
+          </p>
+          <p class="text-sm text-gray-500">
+            Mascota: {{ cita.mascota.nombre }}
+          </p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-gray-500 italic">No tienes citas programadas.</p>
+      <a
+        href="{% url 'agendar_cita' %}"
+        class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        Agendar Cita
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <a
+      href="{% url 'agendar_cita' %}"
+      class="bg-green-600 text-white p-4 rounded-lg text-center hover:bg-green-700 transition"
+    >
+      <span class="block text-2xl mb-2">📅</span>
+      <span class="font-semibold">Agendar Cita</span>
+    </a>
+
+    <a
+      href="{% url 'ver_pedidos' %}"
+      class="bg-blue-600 text-white p-4 rounded-lg text-center hover:bg-blue-700 transition"
+    >
+      <span class="block text-2xl mb-2">🛒</span>
+      <span class="font-semibold">Mis Pedidos</span>
+    </a>
+
+    <a
+      href="{% url 'agregar_mascota' %}"
+      class="bg-yellow-600 text-white p-4 rounded-lg text-center hover:bg-yellow-700 transition"
+    >
+      <span class="block text-2xl mb-2">🐶</span>
+      <span class="font-semibold">Registrar Mascota</span>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

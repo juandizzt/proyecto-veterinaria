@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Historial de citas</h1>
+
+<table>
+    <tr>
+        <th>Usuario</th>
+        <th>Mascota</th>
+        <th>Fecha</th>
+        <th>Motivo</th>
+    </tr>
+    {% for c in citas %}
+    <tr>
+        <td>{{ c.usuario.username }}</td>
+        <td>{{ c.mascota.nombre }}</td>
+        <td>{{ c.fecha }}</td>
+        <td>{{ c.motivo }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

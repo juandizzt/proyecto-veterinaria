@@ -1,20 +1,282 @@
-{% extends "base.html" %} {% block content %} {% load tailwind_filters %}
+{% extends "base.html" %} {% block content %}
 
-<h1>Iniciar Sesión</h1>
-<form action="" method="post">
-  {% csrf_token %} {{ form|crispy }}
-  <button
-    class="inline-block rounded border border-indigo-600 bg-indigo-600 px-12 py-3text-sm font-medium text-white hover:bg-transparent hover:text-indigo-600 focus:ring-3 focus_outline-hidden"
-    href="#"
-    type="submit"
-  >
-    Iniciar Sesión
-  </button>
-</form>
+<style>
+  /* Estilos personalizados para el formulario de login */
+  .login-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 2rem 1rem;
+  }
 
-<p class="text-center text-sm text-gray-500 mt-4">
-  ¿No tienes una cuenta?
-  <a class="uderline" href="{% url "registrar" %}">Registrarse</a>
-</p>
+  .login-card {
+    background: white;
+    padding: 3rem 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+    border: 1px solid rgba(76, 175, 80, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .login-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+  }
+
+  .login-title {
+    color: #2c3e50;
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .login-subtitle {
+    color: #7f8c8d;
+    text-align: center;
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+    font-weight: 400;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .form-label {
+    display: block;
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    box-sizing: border-box;
+  }
+
+  .form-input:focus {
+    border-color: #4caf50;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    outline: none;
+    transform: translateY(-2px);
+  }
+
+  .form-input:hover {
+    border-color: #c8e6c9;
+  }
+
+  .forgot-password {
+    text-align: right;
+    margin-bottom: 1.5rem;
+  }
+
+  .forgot-password a {
+    color: #4caf50;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  .forgot-password a:hover {
+    color: #45a049;
+    text-decoration: underline;
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+  }
+
+  .btn-login:active {
+    transform: translateY(0);
+  }
+
+  .btn-login::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  .btn-login:hover::before {
+    left: 100%;
+  }
+
+  .register-link {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .register-link p {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .register-link a {
+    color: #4caf50;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+  }
+
+  .register-link a:hover {
+    color: #45a049;
+    text-decoration: underline;
+  }
+
+  /* Animaciones de entrada */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .login-card {
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .login-card {
+      padding: 2rem 1.5rem;
+      margin: 1rem;
+    }
+
+    .login-title {
+      font-size: 1.8rem;
+    }
+  }
+
+  /* Estilos para mensajes de error */
+  .error-message {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+</style>
+
+<div class="login-container">
+  <div class="login-card">
+    <h1 class="login-title">INICIAR SESIÓN</h1>
+    <p class="login-subtitle">Bienvenido de nuevo a La Pradera</p>
+
+    <!-- Mostrar mensajes -->
+    {% if messages %} {% for message in messages %}
+    <div
+      class="mb-4 p-3 rounded {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}"
+    >
+      {{ message }}
+    </div>
+    {% endfor %} {% endif %}
+
+    <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="id_username">Usuario</label>
+        <input
+          type="text"
+          name="username"
+          id="id_username"
+          class="form-input"
+          placeholder="Ingresa tu usuario"
+          required
+          value="{{ request.POST.username|default:'' }}"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="id_password">Contraseña</label>
+        <input
+          type="password"
+          name="password"
+          id="id_password"
+          class="form-input"
+          placeholder="Ingresa tu contraseña"
+          required
+        />
+      </div>
+
+      <!-- ELIMINAMOS EL CAMPO DE EMAIL DEL LOGIN -->
+
+      <div class="forgot-password">
+        <a href="#">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <button type="submit" class="btn-login">Iniciar Sesión</button>
+    </form>
+
+    <div class="register-link">
+      <p>¿No tienes una cuenta?</p>
+      <a href="{% url 'registrar' %}">Registrarse</a>
+    </div>
+  </div>
+</div>
 
 {% endblock content %}

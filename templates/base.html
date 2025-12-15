@@ -20,15 +20,17 @@
               />
             </a>
           </div>
+
           <nav class="main-nav">
             <ul>
+              <!-- Opciones visibles para todos -->
               <li>
                 <a href="#" data-url="INICIO_URL" class="nav-link active"
                   >Inicio</a
                 >
               </li>
               <li>
-                <a href="#" data-url="NOSOTROS_URL" class="nav-link"
+                <a href="{% url 'nosotros' %}" data-url="NOSOTROS_URL" class="nav-link"
                   >Nosotros</a
                 >
               </li>
@@ -45,8 +47,36 @@
                   >Contactanos</a
                 >
               </li>
+
+              <!-- SOLO ADMIN -->
+              {% if request.user.is_authenticated and request.user.groups.all.0.name == "admin" %}
+                <li>
+                  <a href="{% url 'panel_admin' %}" class="nav-link">Panel Admin</a>
+                </li>
+                <li>
+                  <a href="{% url 'listado_mascotas' %}" class="nav-link">Mascotas</a>
+                </li>
+                <li>
+                  <a href="{% url 'lista_citas' %}" class="nav-link">Citas (Admin)</a>
+                </li>
+              {% endif %}
+
+              <!-- SOLO EMPLEADO -->
+              {% if request.user.is_authenticated and request.user.groups.all.0.name == "empleado" %}
+                <li>
+                  <a href="{% url 'lista_citas' %}" class="nav-link">Citas (Empleado)</a>
+                </li>
+              {% endif %}
+
+              <!-- SOLO USUARIO NORMAL -->
+              {% if request.user.is_authenticated and request.user.groups.all.0.name == "usuario" %}
+                <li>
+                  <a href="{% url 'mis_citas' %}" class="nav-link">Mis Citas</a>
+                </li>
+              {% endif %}
             </ul>
           </nav>
+
         </div>
       </div>
     </header>
@@ -59,6 +89,7 @@
         <!-- Contenido de las secciones irá aquí -->
       </section>
     </main>
+
     <footer id="fixed-footer">
       <div class="container footer-content">
         <div class="contact-info">
@@ -75,6 +106,7 @@
         </div>
       </div>
     </footer>
+
     {% endblock content %}
   </body>
 </html>

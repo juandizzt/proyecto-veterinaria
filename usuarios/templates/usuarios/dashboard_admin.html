@@ -1,0 +1,95 @@
+<!-- usuarios/templates/usuarios/dashboard_admin.html -->
+{% extends "base.html" %} {% block content %}
+
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6 text-green-700">
+    Dashboard Administrador
+  </h1>
+
+  <!-- Tarjetas de resumen -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-green-500">
+      <h3 class="text-lg font-semibold text-gray-700">Usuarios</h3>
+      <p class="text-3xl font-bold text-green-600">{{ total_usuarios }}</p>
+      <p class="text-sm text-gray-500">Total registrados</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-500">
+      <h3 class="text-lg font-semibold text-gray-700">Mascotas</h3>
+      <p class="text-3xl font-bold text-blue-600">{{ total_mascotas }}</p>
+      <p class="text-sm text-gray-500">Registradas</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-yellow-500">
+      <h3 class="text-lg font-semibold text-gray-700">Citas</h3>
+      <p class="text-3xl font-bold text-yellow-600">{{ total_citas }}</p>
+      <p class="text-sm text-gray-500">Programadas</p>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-red-500">
+      <h3 class="text-lg font-semibold text-gray-700">Pedidos</h3>
+      <p class="text-3xl font-bold text-red-600">{{ total_pedidos }}</p>
+      <p class="text-sm text-gray-500">Realizados</p>
+    </div>
+  </div>
+
+  <!-- Usuarios recientes -->
+  <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+    <h2 class="text-xl font-bold mb-4 text-gray-800">Usuarios Recientes</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="py-3 px-4 text-left">Usuario</th>
+            <th class="py-3 px-4 text-left">Nombre</th>
+            <th class="py-3 px-4 text-left">Rol</th>
+            <th class="py-3 px-4 text-left">Fecha Registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for usuario in usuarios_recientes %}
+          <tr class="border-b hover:bg-gray-50">
+            <td class="py-3 px-4">{{ usuario.username }}</td>
+            <td class="py-3 px-4">{{ usuario.first_name }}</td>
+            <td class="py-3 px-4">
+              <span
+                class="px-2 py-1 rounded-full text-xs font-semibold {% if usuario.rol == 'admin' %}bg-red-100 text-red-800 {% elif usuario.rol == 'empleado' %}bg-blue-100 text-blue-800 {% elif usuario.rol == 'veterinario' %}bg-purple-100 text-purple-800 {% else %}bg-green-100 text-green-800{% endif %}"
+              >
+                {{ usuario.get_rol_display }}
+              </span>
+            </td>
+            <td class="py-3 px-4">{{ usuario.date_joined|date:"d/m/Y" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <h2 class="text-xl font-bold mb-4 text-gray-800">Acciones Rápidas</h2>
+    <div class="flex flex-wrap gap-4">
+      <a
+        href="{% url 'lista_usuarios' %}"
+        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+      >
+        Gestionar Usuarios
+      </a>
+      <a
+        href="/admin"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+      >
+        Panel de Administración
+      </a>
+      <a
+        href="#"
+        class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
+      >
+        Ver Reportes
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

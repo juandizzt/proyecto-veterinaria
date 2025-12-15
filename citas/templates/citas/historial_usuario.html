@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h2>Historial de {{ usuario.username }}</h2>
+
+<h3>Mascotas atendidas</h3>
+<ul>
+    {% for m in mascotas %}
+        <li>
+            <a href="{% url 'historial_mascota' m %}" class="btn btn-primary">
+                Ver historial de {{ m }}
+            </a>
+        </li>
+    {% empty %}
+        <li>No hay mascotas registradas.</li>
+    {% endfor %}
+</ul>
+
+<h3>Citas</h3>
+
+<table>
+<tr>
+    <th>Mascota</th>
+    <th>Tipo</th>
+    <th>Servicio</th>
+    <th>Fecha</th>
+    <th>Hora</th>
+    <th>Descripción</th>
+</tr>
+
+{% for c in citas %}
+<tr>
+    <td>{{ c.mascota }}</td>
+    <td>{{ c.tipo_mascota }}</td>
+    <td>{{ c.tipo_servicio }}</td>
+    <td>{{ c.fecha_cita }}</td>
+    <td>{{ c.hora_cita }}</td>
+    <td>{{ c.descripcion }}</td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="6">No hay citas registradas.</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

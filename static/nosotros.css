@@ -1,0 +1,224 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header fijo - Mismo estilo que productos */
+/* CAMBIO DE COLOR: Verde más claro */
+header {
+    background: linear-gradient(135deg, #4CAF50, #66BB6A); /* Verde más claro */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    height: 50px; /* Misma altura que el logo-img */
+}
+
+.logo-img {
+    width: 50px;
+    height: 50px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+.logo h1 {
+    color: white !important;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    padding-bottom: 0 !important; /* Eliminado el padding inferior */
+    border-bottom: none !important; /* Elimina cualquier borde */
+    text-decoration: none !important; /* Elimina subrayado */
+    line-height: 1; /* Elimina espacio extra de línea */
+    margin: 0; /* Elimina márgenes por defecto */
+    display: flex;
+    align-items: center; /* Centra verticalmente el texto */
+    height: 100%; /* Ocupa toda la altura del contenedor logo */
+}
+
+/* ELIMINACIÓN COMPLETA DE CUALQUIER LÍNEA */
+.logo h1::before,
+.logo h1::after {
+    display: none !important;
+    content: none !important;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center; /* Asegura que los enlaces también estén centrados */
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.nav-links a:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover:after {
+    width: 80%;
+    left: 10%;
+}
+
+/* Contenido principal */
+.main-content {
+    flex: 1;
+    padding: 120px 2rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+section {
+    background: white;
+    padding: 3rem;
+    margin: 2rem 0;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #4CAF50;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    border-bottom: 3px solid #66BB6A;
+    padding-bottom: 0.5rem;
+}
+
+h2 {
+    color: #4CAF50;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    color: #555;
+}
+
+ul {
+    list-style: none;
+    margin: 1.5rem 0;
+}
+
+ul li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+ul li:before {
+    content: "✓";
+    color: #4CAF50;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.image-content {
+    text-align: center;
+}
+
+.image-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+iframe {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Footer fijo - Mismo estilo que productos */
+/* CAMBIO DE COLOR: Verde en lugar del azul */
+footer {
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    color: white;
+    padding: 1.5rem 0;
+    margin-top: auto;
+    width: 100%;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    gap: 1.5rem;
+}
+
+.footer-content div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-content strong {
+    color: #E8F5E9;
+    font-weight: 600;
+}

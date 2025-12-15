@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime
+from django.conf import settings
 
 
 class Cita(models.Model):
@@ -12,15 +13,34 @@ class Cita(models.Model):
         ("urgencia", "Urgencia"),
         ("cirugia", "Cirugía"),
     ]
+    
+    # AGREGAR ESTA SECCIÓN:
+    ESTADO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('confirmada', 'Confirmada'),
+        ('completada', 'Completada'),
+        ('cancelada', 'Cancelada'),
+    ]
 
     mascota = models.CharField(max_length=100, verbose_name="Nombre de la Mascota")
     propietario = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name="Propietario"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='citas'
     )
     tipo_mascota = models.CharField(max_length=50, verbose_name="Tipo de Mascota")
     tipo_servicio = models.CharField(
         max_length=20, choices=TIPO_SERVICIO_CHOICES, default="consulta"
     )
+    
+    # AGREGAR ESTE CAMPO:
+    estado = models.CharField(
+        max_length=20, 
+        choices=ESTADO_CHOICES, 
+        default='pendiente',
+        verbose_name="Estado de la cita"
+    )
+    
     fecha_cita = models.DateField(verbose_name="Fecha de la cita")
     hora_cita = models.TimeField(verbose_name="Hora de la cita")
     descripcion = models.TextField(verbose_name="Descripción del problema", blank=True)

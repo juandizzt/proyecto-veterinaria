@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h2>Listado de todas las mascotas registradas</h2>
+
+<ul>
+    {% for m in mascotas %}
+        <li>
+            <a class="btn btn-primary" href="{% url 'historial_mascota' m %}">
+                {{ m }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

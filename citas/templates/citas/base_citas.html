@@ -1,147 +1,471 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Sistema de Citas - Veterinaria{% endblock %}</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #f5f5f5;
-            color: #333;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .header {
-            background: #2c3e50;
-            color: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-        }
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin-left: 20px;
-            padding: 5px 10px;
-            border-radius: 3px;
-        }
-        .nav-links a:hover {
-            background: #34495e;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            margin: 5px;
-        }
-        .btn:hover {
-            background: #2980b9;
-        }
-        .btn-danger {
-            background: #e74c3c;
-        }
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-        .btn-success {
-            background: #27ae60;
-        }
-        .btn-success:hover {
-            background: #219a52;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        .messages {
-            margin: 20px 0;
-        }
-        .alert {
-            padding: 15px;
-            border-radius: 4px;
-            margin: 10px 0;
-        }
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .cita-card {
-            border-left: 4px solid #3498db;
-            padding: 15px;
-            margin: 10px 0;
-            background: white;
-            border-radius: 4px;
-        }
-        .cita-pasada {
-            border-left-color: #95a5a6;
-            opacity: 0.7;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="container">
-            <div class="nav">
-                <h1>🐾 Veterinaria Amigos Fieles</h1>
-                <div class="nav-links">
-                    <a href="{% url 'citas:home_citas' %}">Inicio</a>
-                    <a href="{% url 'citas:lista_citas' %}">Mis Citas</a>
-                    <a href="{% url 'citas:crear_cita' %}">Nueva Cita</a>
-                </div>
-            </div>
-        </div>
-    </div>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Arial", sans-serif;
+        background: #f5f5f5;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-top: 80px; /* Espacio para el header fijo */
+      }
 
-    <div class="container">
+      /* Header fijo - IDÉNTICO AL PRINCIPAL */
+      header {
+        background: linear-gradient(135deg, #4caf50, #66bb6a);
+        color: white;
+        padding: 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      /* Contenedor del logo rectangular */
+      .logo-img {
+        width: 160px; /* Ancho rectangular */
+        height: 60px; /* Alto menor que ancho */
+        border-radius: 8px; /* Esquinas ligeramente redondeadas */
+        overflow: hidden; /* Para que la imagen no sobresalga */
+        border: 2px solid white; /* Borde blanco */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra suave */
+        flex-shrink: 0; /* Evita que se reduzca */
+        background-color: white; /* Fondo blanco por si la imagen no carga */
+      }
+
+      /* Imagen dentro del logo */
+      .logo-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Ajusta la imagen sin deformarla */
+        display: block;
+        padding: 2px; /* Un poco de espacio interno */
+      }
+
+      .logo h1 {
+        font-size: 2.2rem;
+        font-weight: bold;
+        color: white !important;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+        margin: 0;
+        line-height: 1;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .nav-links a:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .nav-links a:after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: 0;
+        left: 50%;
+        background-color: white;
+        transition: all 0.3s ease;
+      }
+
+      .nav-links a:hover:after {
+        width: 80%;
+        left: 10%;
+      }
+
+      /* Contenido principal separado del header */
+      .main-content {
+        flex: 1;
+        width: 100%;
+        padding: 20px 0;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Footer fijo - IDÉNTICO AL PRINCIPAL */
+      footer {
+        background: linear-gradient(135deg, #4caf50, #66bb6a);
+        color: white;
+        padding: 1.5rem 0;
+        margin-top: auto;
+        width: 100%;
+      }
+
+      .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        gap: 1.5rem;
+      }
+
+      .footer-content div {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .footer-content strong {
+        color: #e8f5e9;
+        font-weight: 600;
+      }
+
+      /* ESTILOS ESPECÍFICOS PARA LA PÁGINA DE INICIO - CENTRADO TOTAL */
+      .home-container {
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      .home-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #4caf50;
+        text-align: center;
+      }
+
+      .home-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 3rem;
+        line-height: 1.6;
+        color: #666;
+        text-align: center;
+      }
+
+      .features-list {
+        list-style: none;
+        text-align: left;
+        margin-bottom: 3rem;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature-item {
+        margin-bottom: 25px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #eee;
+      }
+
+      .feature-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+
+      .feature-title {
+        font-size: 1.3rem;
+        color: #4caf50;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+
+      .feature-description {
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 15px;
+      }
+
+      .feature-button {
+        display: block;
+        width: 100%;
+        padding: 12px 25px;
+        background: #4caf50;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        text-align: center;
+      }
+
+      .feature-button:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+      }
+
+      /* Estilos generales */
+      .btn {
+        display: inline-block;
+        padding: 12px 25px;
+        background: #4caf50;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        min-width: 180px;
+      }
+
+      .btn:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+      }
+
+      .btn-danger {
+        background: #e74c3c;
+      }
+
+      .btn-danger:hover {
+        background: #c0392b;
+      }
+
+      .card {
+        background: white;
+        padding: 25px;
+        margin: 20px 0;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #66bb6a;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #4caf50;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+
+      .form-control:focus {
+        border-color: #4caf50;
+        outline: none;
+      }
+
+      .messages {
+        margin: 20px 0;
+      }
+
+      .alert {
+        padding: 15px;
+        border-radius: 4px;
+        margin: 10px 0;
+      }
+
+      .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .cita-card {
+        border-left: 4px solid #4caf50;
+        padding: 15px;
+        margin: 10px 0;
+        background: white;
+        border-radius: 4px;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        body {
+          padding-top: 100px; /* Más padding para header en móvil */
+        }
+
+        .nav {
+          flex-direction: column;
+          gap: 10px;
+          padding: 10px 0;
+        }
+
+        .logo-img {
+          width: 120px;
+          height: 50px;
+        }
+
+        .logo h1 {
+          font-size: 1.8rem;
+        }
+
+        .nav-links {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .nav-links a {
+          font-size: 0.9rem;
+          padding: 6px 12px;
+        }
+
+        .footer-content {
+          flex-direction: column;
+          text-align: center;
+          gap: 0.8rem;
+        }
+
+        .footer-content div {
+          justify-content: center;
+        }
+
+        .home-title {
+          font-size: 2rem;
+        }
+
+        .home-container {
+          max-width: 90%;
+          padding: 20px 10px;
+        }
+
+        .features-list {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header fijo - ADAPTADO AL PRINCIPAL -->
+    <header>
+      <nav class="nav">
+        <div class="logo">
+          <div class="logo-img">
+            {% load static %}
+            <img
+              src="{% static 'imagenes/praderas.jpg' %}"
+              alt="Logo Veterinaria La Pradera"
+            />
+          </div>
+          <h1>La Pradera</h1>
+        </div>
+        <!-- En la sección de navegación, agregar: -->
+        <div class="nav-links">
+          <a href="{% url 'inicio' %}">Inicio</a>
+          <a href="{% url 'nosotros'%}">Nosotros</a>
+          <a href="{% url 'lista' %}">Productos</a>
+          <a
+            href="{% url 'citas:lista_citas' %}"
+            style="background-color: rgba(255, 255, 255, 0.3)"
+            >Mis Citas</a
+          >
+
+          <!-- ENLACES PARA EMPLEADOS Y VETERINARIOS -->
+          {% if user.es_empleado or user.es_veterinario %}
+          <a href="{% url 'citas:citas_hoy' %}">Citas Hoy</a>
+          <a href="{% url 'citas:citas_pendientes' %}">Pendientes</a>
+          {% endif %}
+
+          <!-- ENLACES PARA ADMINISTRADORES -->
+          {% if user.es_admin %}
+          <a href="{% url 'citas:historial_citas' %}">Historial</a>
+          <a href="{% url 'citas:listado_mascotas' %}">Mascotas</a>
+          {% endif %}
+        </div>
+      </nav>
+    </header>
+
+    <!-- Contenido principal separado -->
+    <main class="main-content">
+      <div class="container">
         {% if messages %}
         <div class="messages">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-            {% endfor %}
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
         </div>
-        {% endif %}
+        {% endif %} {% block content %}
+        <!-- CONTENIDO DE LA PÁGINA DE INICIO - MEJOR ORGANIZACIÓN -->
+        <div class="home-container">
+          <h1 class="home-title">Bienvenido al Sistema de Citas</h1>
+          <p class="home-subtitle">
+            Gestiona las citas de tus mascotas de forma fácil y rápida.
+          </p>
 
-        {% block content %}
+          <ul class="features-list">
+            <li class="feature-item">
+              <div class="feature-title">Agendar Cita</div>
+              <p class="feature-description">
+                Programa una nueva cita para tu mascota
+              </p>
+              <a href="{% url 'citas:crear_cita' %}" class="feature-button"
+                >Agendar Nueva Cita</a
+              >
+            </li>
+            <li class="feature-item">
+              <div class="feature-title">Ver Mis Citas</div>
+              <p class="feature-description">
+                Consulta y gestiona tus citas existentes
+              </p>
+              <a href="{% url 'citas:lista_citas' %}" class="feature-button"
+                >Ver Mis Citas</a
+              >
+            </li>
+          </ul>
+        </div>
         {% endblock %}
-    </div>
-</body>
+      </div>
+    </main>
+
+    <!-- Footer - ADAPTADO AL PRINCIPAL -->
+    <footer>
+      <div class="footer-content">
+        <div>🏠︎<strong>Ubicación:</strong> Carrea 144 Barrio El Salado</div>
+        <div>☏<strong>Telefono:</strong> 3212345673</div>
+        <div>✉<strong>Correo:</strong> lapradera@gmail.com</div>
+      </div>
+    </footer>
+  </body>
 </html>

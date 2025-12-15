@@ -1,0 +1,88 @@
+<!-- citas/templates/citas/citas_pendientes.html -->
+{% extends 'citas/base_citas.html' %}
+
+{% block title %}Citas Pendientes - Veterinaria{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2> Citas Pendientes de Confirmación</h2>
+    
+    {% if citas %}
+    <div class="table-responsive">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background: #FF9800; color: white;">
+                    <th style="padding: 12px; text-align: left;">Fecha</th>
+                    <th style="padding: 12px; text-align: left;">Hora</th>
+                    <th style="padding: 12px; text-align: left;">Mascota</th>
+                    <th style="padding: 12px; text-align: left;">Propietario</th>
+                    <th style="padding: 12px; text-align: left;">Servicio</th>
+                    <th style="padding: 12px; text-align: left;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cita in citas %}
+                <tr style="border-bottom: 1px solid #ddd; background: {% cycle '#f9f9f9' 'white' %}">
+                    <td style="padding: 12px;">{{ cita.fecha_cita|date:"d/m/Y" }}</td>
+                    <td style="padding: 12px;">{{ cita.hora_cita }}</td>
+                    <td style="padding: 12px;">
+                        <strong>{{ cita.mascota }}</strong><br>
+                        <small>{{ cita.tipo_mascota }}</small>
+                    </td>
+                    <td style="padding: 12px;">
+                        {{ cita.propietario.get_full_name|default:cita.propietario.username }}<br>
+                        <small>{{ cita.telefono }}</small>
+                    </td>
+                    <td style="padding: 12px;">{{ cita.get_tipo_servicio_display }}</td>
+                    <td style="padding: 12px;">
+                        <div style="display: flex; gap: 5px;">
+                            <a href="{% url 'citas:detalle_cita' cita.pk %}" 
+                               class="btn" 
+                               style="padding: 5px 10px; font-size: 0.85rem;">
+                                👁️ Ver
+                            </a>
+                            <a href="{% url 'citas:editar_cita' cita.pk %}" 
+                               class="btn" 
+                               style="padding: 5px 10px; font-size: 0.85rem; background: #3498db;">
+                                ✏️ Editar
+                            </a>
+                            <form method="post" action="{% url 'citas:cambiar_estado_cita' cita.pk %}" 
+                                  style="display: inline;">
+                                {% csrf_token %}
+                                <select name="estado" 
+                                        onchange="this.form.submit()"
+                                        style="padding: 5px; border-radius: 4px;">
+                                    {% for value, label in cita.ESTADO_CHOICES %}
+                                    <option value="{{ value }}" {% if cita.estado == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="margin-top: 20px; background: #e8f4fc; padding: 15px; border-radius: 8px;">
+        <p><strong>📊 Resumen:</strong> {{ citas.count }} citas pendientes de confirmación</p>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">
+        <p style="font-size: 1.2rem; color: #666;">🎉 ¡No hay citas pendientes!</p>
+        <p>Todas las citas han sido confirmadas.</p>
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+        <a href="{% url 'citas:citas_hoy' %}" class="btn">📅 Ver Citas de Hoy</a>
+        <a href="{% url 'citas:lista_citas' %}" class="btn">↩️ Volver a Mis Citas</a>
+        {% if user.es_admin %}
+        <a href="{% url 'citas:listado_mascotas' %}" class="btn">🐾 Ver Mascotas</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

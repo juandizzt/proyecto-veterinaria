@@ -1,38 +1,336 @@
-{% extends 'base.html' %} {% block title %}Crear Historial Médico{% endblock %}
+{% extends 'base.html' %} 
+{% block title %}Crear Historial Médico{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">➕ Crear Historial Médico</h1>
+<style>
+    /* Estilos generales */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-  <div class="bg-white p-6 rounded-lg shadow">
-    <form method="post">
-      {% csrf_token %} {% for field in form %}
-      <div class="mb-4">
-        <label class="block text-gray-700 font-semibold mb-2">
-          {{ field.label }}
-        </label>
-        {{ field }} {% if field.errors %}
-        <div class="text-red-500 text-sm mt-1">{{ field.errors }}</div>
-        {% endif %} {% if field.help_text %}
-        <div class="text-gray-500 text-sm mt-1">{{ field.help_text }}</div>
-        {% endif %}
-      </div>
-      {% endfor %}
+    body {
+        font-family: 'Arial', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
 
-      <div class="mt-6 flex gap-4">
-        <button
-          type="submit"
-          class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          💾 Guardar Historial
-        </button>
-        <a
-          href="{% url 'historialM:lista_historiales' %}"
-          class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-        >
-          ↩️ Cancelar
-        </a>
-      </div>
-    </form>
-  </div>
-</div>
+    /* Header fijo */
+    header {
+        background: #27ae60;
+        color: white;
+        padding: 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .logo-img {
+        width: 200px;
+        height: 90px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 2px solid white;
+    }
+
+    .logo h1 {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: white;
+        position: relative;
+        padding-bottom: 8px;
+    }
+
+    .logo h1::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: white;
+        border-radius: 2px;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .nav-links a:hover {
+        background-color: rgba(255,255,255,0.2);
+    }
+
+    /* Contenido principal */
+    .main-content {
+        flex: 1;
+        padding: 120px 2rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .container {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin: 2rem 0;
+    }
+
+    h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 2.5rem;
+        border-bottom: 3px solid #34db66;
+        padding-bottom: 0.5rem;
+    }
+
+    /* Estilos del formulario */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #27ae60;
+        box-shadow: 0 0 5px rgba(39, 174, 96, 0.3);
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .error {
+        color: #e74c3c;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+    .help-text {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Botones */
+    .btn-container {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        min-width: 150px;
+    }
+
+    .btn-primary {
+        background: #27ae60;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #219a52;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background: #95a5a6;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #7f8c8d;
+        transform: translateY(-2px);
+    }
+
+    /* Footer fijo */
+    footer {
+        background: #27ae60;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+        margin-top: auto;
+        width: 100%;
+    }
+
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .footer-content div {
+        padding: 0.5rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .nav {
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .nav-links {
+            margin-top: 1rem;
+            gap: 1rem;
+        }
+
+        .main-content {
+            padding: 180px 1rem 2rem;
+        }
+
+        .logo {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .logo-img {
+            width: 150px;
+            height: 70px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            padding-bottom: 6px;
+        }
+
+        .btn-container {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+
+<!-- Header -->
+<header>
+    <nav class="nav">
+        <div class="logo">
+            <img src="/static/imagenes/praderas.jpeg" alt="Logo Veterinaria" class="logo-img">
+            <h1 style="color: white !important;">La Pradera</h1>
+        </div>
+        
+        <div class="nav-links">
+            <a href="">Inicio</a>
+            <a href="{% url 'nosotros' %}">Nosotros</a>
+            <a href="{% url 'lista' %}">Productos</a>
+            <a href="{% url 'citas:lista_citas' %}">Citas</a>
+            <a href="#">Contactanos</a>
+        </div>
+    </nav>
+</header>
+
+<!-- Contenido principal -->
+<main class="main-content">
+    <div class="container">
+        <h1>➕ Crear Historial Médico</h1>
+
+        <form method="post">
+            {% csrf_token %} 
+            
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+                
+                {% if field.errors %}
+                <div class="error">{{ field.errors }}</div>
+                {% endif %}
+                
+                {% if field.help_text %}
+                <div class="help-text">{{ field.help_text }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary">
+                    💾 Guardar Historial
+                </button>
+                <a href="{% url 'historialM:lista_historiales' %}" class="btn btn-secondary">
+                    ↩️ Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div><strong>UBICACIÓN:</strong> CARRERA 144 BARRIO EL SALADO</div>
+        <div><strong>TELÉFONO:</strong> 3212345673</div>
+        <div><strong>CORREO:</strong> LAPRADERA@GMAIL.COM</div>
+    </div>
+</footer>
 {% endblock %}
