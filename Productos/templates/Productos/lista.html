@@ -600,7 +600,7 @@
                 <!-- Información del usuario en el header -->
                 {% if user.is_authenticated %}
                 <div class="user-header">
-                    <span class="user-welcome">Bienvenido <strong>{{ user.username }}</strong></span>
+                    <span class="user-welcome">Bienvenido <strong><a href="{% url 'dashboard' %}">{{ user.username }}</a></strong></span>
                     <form method="POST" action="{% url 'logout' %}" style="display: inline;">
                         {% csrf_token %}
                         <input type="hidden" name="next" value="{% url 'inicio' %}">
@@ -615,6 +615,7 @@
                 </div>
                 {% endif %}
             </div>
+
         </nav>
     </header>
 

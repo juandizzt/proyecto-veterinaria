@@ -32,3 +32,8 @@ class UsuariosRoles(AbstractUser):
     
     def es_veterinario(self):
         return self.rol == 'veterinario'
+    
+class PasswordReset(models.Model):
+    email = models.EmailField()
+    token = models.CharField(max_length=100)
+    created = models.DateTimeField(auto_now_add=True)

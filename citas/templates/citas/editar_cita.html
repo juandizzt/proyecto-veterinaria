@@ -3,32 +3,31 @@
 {% block title %}Editar Cita - Veterinaria{% endblock %}
 
 {% block content %}
-<div class="card">
-    <h2> Editar Cita: {{ object.mascota }}</h2>
-    
+<style>
+    .form-card { max-width: 500px; margin: 0 auto; background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid #4caf50; }
+    .form-card h2 { color: #2e7d32; text-align: center; margin-bottom: 25px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; color: #4caf50; font-weight: bold; margin-bottom: 8px; }
+    /* Forzar estilos a inputs de Django */
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100% !important; padding: 12px !important; border: 2px solid #eee !important; border-radius: 12px !important; box-sizing: border-box !important;
+    }
+    .btn-save { background: #4caf50; color: white; border: none; padding: 14px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; font-size: 1rem; }
+    .btn-secondary { display: block; text-align: center; margin-top: 15px; color: #888; text-decoration: none; font-size: 0.9rem; }
+</style>
+
+<div class="form-card">
+    <h2>Editar Cita: {{ object.mascota }}</h2>
     <form method="post">
         {% csrf_token %}
-        
         {% for field in form %}
         <div class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            <label>{{ field.label }}</label>
             {{ field }}
-            {% if field.help_text %}
-            <small style="color: #666;">{{ field.help_text }}</small>
-            {% endif %}
-            {% if field.errors %}
-            <div style="color: #e74c3c; font-size: 14px; margin-top: 5px;">
-                {{ field.errors }}
-            </div>
-            {% endif %}
         </div>
         {% endfor %}
-        
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn btn-success">💾 Guardar Cambios</button>
-            <a href="{% url 'citas:lista_citas' %}" class="btn">↩️ Cancelar</a>
-            <a href="{% url 'citas:detalle_cita' object.pk %}" class="btn">👁️ Ver Detalles</a>
-        </div>
+        <button type="submit" class="btn-save">💾 Guardar Cambios</button>
+        <a href="{% url 'citas:lista_citas' %}" class="btn-secondary">Cancelar y volver</a>
     </form>
 </div>
 {% endblock %}

@@ -1,0 +1,44 @@
+<!-- mascotas/templates/mascotas/lista_mascotas.html -->
+{% extends "base.html" %} {% block title %}Lista de Mascotas{% endblock %}
+{%block content %}
+<div class="container">
+  <h1>Lista de Mascotas</h1>
+
+  {% if user.es_cliente %}
+  <p>Estás viendo solo tus mascotas.</p>
+  {% else %}
+  <p>Estás viendo todas las mascotas registradas.</p>
+  {% endif %}
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Especie</th>
+        <th>Raza</th>
+        <th>Edad</th>
+        <th>Dueño</th>
+        <th>Fecha Registro</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mascota in mascotas %}
+      <tr>
+        <td>{{ mascota.nombre }}</td>
+        <td>{{ mascota.especie }}</td>
+        <td>{{ mascota.raza|default:"-" }}</td>
+        <td>{{ mascota.edad }} años</td>
+        <td>
+          {{ mascota.dueño.get_full_name|default:mascota.dueño.username }}
+        </td>
+        <td>{{ mascota.fecha_registro|date:"d/m/Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center">No hay mascotas registradas.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

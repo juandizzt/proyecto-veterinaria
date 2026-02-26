@@ -1,0 +1,547 @@
+<!-- usuarios/templates/usuarios/dashboard_empleado.html -->
+{% extends "base.html" %} {% block content %}
+
+<style>
+  /* Estilos específicos para el dashboard del empleado */
+  .container-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: "Arial", sans-serif;
+  }
+
+  h1 {
+    color: #2196f3; /* Azul */
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    border-bottom: 3px solid #64b5f6;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Tarjetas de bienvenida */
+  .welcome-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #2196f3;
+    transition: transform 0.3s;
+  }
+
+  .welcome-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .welcome-card h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .welcome-card p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+
+  /* Tarjetas de resumen */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    border-top: 4px solid;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-card:nth-child(1) {
+    border-color: #2196f3;
+  }
+  .stat-card:nth-child(2) {
+    border-color: #ff9800;
+  }
+  .stat-card:nth-child(3) {
+    border-color: #f44336;
+  }
+  .stat-card:nth-child(4) {
+    border-color: #4caf50;
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+  }
+
+  .stat-card:nth-child(1) .stat-number {
+    color: #2196f3;
+  }
+  .stat-card:nth-child(2) .stat-number {
+    color: #ff9800;
+  }
+  .stat-card:nth-child(3) .stat-number {
+    color: #f44336;
+  }
+  .stat-card:nth-child(4) .stat-number {
+    color: #4caf50;
+  }
+
+  /* Grid de contenido */
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Tarjetas de contenido */
+  .content-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #2196f3;
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+
+  .content-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .content-card h2 {
+    color: #2c3e50;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Listas de items */
+  .item-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .item-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #2196f3;
+    transition: all 0.3s ease;
+  }
+
+  .item-card:hover {
+    background: #e3f2fd;
+    transform: translateX(5px);
+  }
+
+  .item-card h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .item-card p {
+    color: #666;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+  }
+
+  /* Tabla de citas */
+  .table-container {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: #2196f3;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    color: #666;
+  }
+
+  tr:hover {
+    background: #f8f9fa;
+  }
+
+  /* Badges de estado */
+  .badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .badge-confirmed {
+    background: #d4edda;
+    color: #155724;
+  }
+  .badge-pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+  .badge-cancelled {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  /* Acciones rápidas */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .quick-actions {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .action-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: #2196f3;
+  }
+
+  .action-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .action-card:nth-child(1) .action-icon {
+    color: #2196f3;
+  }
+  .action-card:nth-child(2) .action-icon {
+    color: #4caf50;
+  }
+  .action-card:nth-child(3) .action-icon {
+    color: #ff9800;
+  }
+
+  .action-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+  }
+
+  /* Botones */
+  .btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: #2196f3;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .btn:hover {
+    background-color: #1976d2;
+  }
+
+  /* Mensajes vacíos */
+  .empty-message {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px dashed #ddd;
+  }
+
+  /* Scrollbar personalizado */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #2196f3;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1976d2;
+  }
+  .btn-home {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    background-color: #2196f3;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+
+  .btn-home:hover {
+    background-color: #1976d2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-icon {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+  }
+</style>
+
+<div class="container-dashboard">
+  <h1>Dashboard Empleado</h1>
+
+  <div style="text-align: center; margin-bottom: 1rem">
+    <a href="{% url 'inicio' %}" class="btn-home">
+      <span class="btn-icon">🏠</span> Regresar a Inicio
+    </a>
+  </div>
+
+  <!-- Bienvenida -->
+  <div class="welcome-card">
+    <h2>¡Bienvenido, {{ user.first_name }}!</h2>
+    <p>Panel de control para empleados de La Pradera</p>
+  </div>
+
+  <!-- Tarjetas de resumen -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Citas Hoy</h3>
+      <div class="stat-number">{{ total_citas_hoy }}</div>
+      <p>Para hoy</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Pedidos Pendientes</h3>
+      <div class="stat-number">{{ total_pedidos_pendientes }}</div>
+      <p>Por procesar</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Productos Bajo Stock</h3>
+      <div class="stat-number">{{ productos_bajo_stock|length }}</div>
+      <p>Necesitan reposición</p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Citas Próximas</h3>
+      <div class="stat-number">{{ citas_proximas|length }}</div>
+      <p>Programadas</p>
+    </div>
+  </div>
+
+  <!-- Citas de hoy y productos bajo stock -->
+  <div class="content-grid">
+    <!-- Citas para Hoy -->
+    <div class="content-card">
+      <h2>📅 Citas para Hoy</h2>
+      {% if citas_hoy %}
+      <div class="item-list">
+        {% for cita in citas_hoy %}
+        <div class="item-card">
+          <h3>{{ cita.mascota.nombre|default:"Sin nombre" }}</h3>
+          <p>
+            <strong>Servicio:</strong> {{ cita.servicio|default:"Consulta" }}
+          </p>
+          <p>
+            <strong>Dueño:</strong>
+            {{cita.propietario.first_name|default:cita.propietario.username }}
+          </p>
+
+          <p>
+            <strong>Hora:</strong> {{ cita.hora_cita|time:"H:i"|default:"-" }}
+          </p>
+          <p>
+            <strong>Estado:</strong>
+            <span
+              class="badge {% if cita.estado == 'confirmada' %}badge-confirmed{% else %}badge-pending{% endif %}"
+            >
+              {{ cita.get_estado_display|default:"Pendiente" }}
+            </span>
+          </p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-message">
+        <p>No hay citas programadas para hoy</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Productos bajo stock -->
+    <div class="content-card">
+      <h2>⚠️ Productos Bajo Stock</h2>
+      {% if productos_bajo_stock %}
+      <div class="item-list">
+        {% for producto in productos_bajo_stock %}
+        <div class="item-card">
+          <h3>{{ producto.nombre }}</h3>
+          <p>
+            <strong>Categoría:</strong>
+            {% if producto.categoria %} {{ producto.categoria }} {% else %} Sin
+            categoría {% endif %}
+          </p>
+          <p>
+            <strong>Stock:</strong>
+            <span style="color: #f44336; font-weight: bold"
+              >{{ producto.stock }} unidades</span
+            >
+          </p>
+          <p><small>SKU: {{ producto.id }}</small></p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-message">
+        <p>Todos los productos tienen stock suficiente</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Citas próximas -->
+  <div class="table-container">
+    <h2>📋 Próximas Citas</h2>
+    {% if citas_proximas %}
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Cliente</th>
+          <th>Mascota</th>
+          <th>Servicio</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cita in citas_proximas %}
+        <tr>
+          <td>{{ cita.fecha_cita|date:"d/m/Y" }}</td>
+          <td>{{ cita.hora_cita|time:"H:i" }}</td>
+          <td>
+            {{ cita.propietario.first_name|default:cita.propietario.username }}
+          </td>
+          <td>{{ cita.mascota.nombre|default:"-" }}</td>
+          <td>{{ cita.servicio|default:"Consulta" }}</td>
+          <td>
+            <span
+              class="badge {% if cita.estado == 'confirmada' %}badge-confirmed{% elif cita.estado == 'pendiente' %}badge-pending{% else %}badge-cancelled{% endif %}"
+            >
+              {{ cita.get_estado_display|default:"Pendiente" }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-message">
+      <p>No hay citas próximas programadas</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="quick-actions">
+    <a href="#" class="action-card">
+      <span class="action-icon">📅</span>
+      <h3>Agendar Cita</h3>
+      <p>Programa una nueva cita</p>
+    </a>
+
+    <a href="#" class="action-card">
+      <span class="action-icon">🛒</span>
+      <h3>Procesar Pedidos</h3>
+      <p>Gestiona los pedidos pendientes</p>
+    </a>
+
+    <a href="#" class="action-card">
+      <span class="action-icon">📋</span>
+      <h3>Ver Inventario</h3>
+      <p>Consulta el stock de productos</p>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

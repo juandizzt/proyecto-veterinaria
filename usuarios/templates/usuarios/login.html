@@ -21,7 +21,9 @@
     border: 1px solid rgba(76, 175, 80, 0.1);
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
   }
 
   .login-card:hover {
@@ -266,9 +268,8 @@
       <!-- ELIMINAMOS EL CAMPO DE EMAIL DEL LOGIN -->
 
       <div class="forgot-password">
-        <a href="#">¿Olvidaste tu contraseña?</a>
+        <a href="{% url 'recuperar_password' %}">¿Olvidaste tu contraseña?</a>
       </div>
-
       <button type="submit" class="btn-login">Iniciar Sesión</button>
     </form>
 

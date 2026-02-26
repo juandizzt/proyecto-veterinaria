@@ -19,7 +19,12 @@ urlpatterns = [
     
     # VISTAS PARA EMPLEADOS/VETERINARIOS/ADMIN
     path('listado_mascotas/', views.listado_mascotas, name='listado_mascotas'),
-    path('historial/mascota/<str:nombre_mascota>/', views.historial_mascota, name='historial_mascota'),
+    
+    # --- RUTA DE EDICIÓN AGREGADA ---
+    # Esta ruta permite que views.editar_mascota reciba el ID y cargue los datos
+    path('mascotas/editar/<int:mascota_id>/', views.editar_mascota, name='editar_mascota'),
+    
+    path('historial/mascota/<int:mascota_id>/', views.historial_mascota, name='historial_mascota'),
     
     # VISTAS PARA GESTIÓN OPERATIVA (empleados y veterinarios)
     path('citas/hoy/', views.citas_hoy, name='citas_hoy'),

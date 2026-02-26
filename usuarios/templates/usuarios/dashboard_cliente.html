@@ -1,103 +1,441 @@
 <!-- usuarios/templates/usuarios/dashboard_cliente.html -->
 {% extends "base.html" %} {% block content %}
 
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-6 text-green-700">Mi Dashboard</h1>
+<style>
+  /* Estilos específicos para el dashboard del cliente */
+  .container-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: "Arial", sans-serif;
+  }
+
+  h1 {
+    color: #4caf50;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    border-bottom: 3px solid #66bb6a;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Tarjetas de bienvenida */
+  .welcome-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid #4caf50;
+    transition: transform 0.3s;
+  }
+
+  .welcome-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .welcome-card h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .welcome-card p {
+    color: #666;
+    font-size: 1.1rem;
+  }
+
+  /* Grid de mascotas y citas */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Tarjetas de contenido */
+  .content-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #4caf50;
+    height: 100%;
+    transition: all 0.3s ease;
+  }
+
+  .content-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .content-card h2 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Listas de items */
+  .item-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+
+  .item-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #66bb6a;
+    transition: all 0.3s ease;
+  }
+
+  .item-card:hover {
+    background: #e9f5e9;
+    transform: translateX(5px);
+  }
+
+  .item-card h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .item-card p {
+    color: #666;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+  }
+
+  /* Tabla de citas */
+  .table-container {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: #4caf50;
+    color: white;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    color: #666;
+  }
+
+  tr:hover {
+    background: #f8f9fa;
+  }
+
+  /* Badges de estado */
+  .badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .badge-confirmed {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .badge-pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  /* Acciones rápidas */
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .quick-actions {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .action-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+
+  .action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: #4caf50;
+  }
+
+  .action-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .action-card:nth-child(1) .action-icon {
+    color: #4caf50;
+  }
+  .action-card:nth-child(2) .action-icon {
+    color: #2196f3;
+  }
+  .action-card:nth-child(3) .action-icon {
+    color: #ff9800;
+  }
+
+  .action-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+  }
+
+  /* Botones */
+  .btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: #4caf50;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .btn:hover {
+    background-color: #45a049;
+  }
+
+  .btn-blue {
+    background-color: #2196f3;
+  }
+
+  .btn-blue:hover {
+    background-color: #1976d2;
+  }
+
+  /* Mensajes vacíos */
+  .empty-message {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px dashed #ddd;
+  }
+
+  /* Scrollbar personalizado */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #4caf50;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #45a049;
+  }
+
+  .btn-home {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    background-color: #4caf50;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+
+  .btn-home:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-icon {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+  }
+</style>
+
+<div class="container-dashboard">
+  <h1>Mi Panel de Control</h1>
 
   <!-- Bienvenida -->
-  <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-    <h2 class="text-2xl font-bold text-gray-800 mb-2">
-      ¡Hola, {{ user.first_name }}!
-    </h2>
-    <p class="text-gray-600">Bienvenido a tu panel de cliente en La Pradera</p>
+  <div class="welcome-card">
+    <h2>¡Hola, {{ user.first_name }}!</h2>
+    <p>Bienvenido a tu panel de cliente en La Pradera</p>
   </div>
 
-  <!-- Mis mascotas -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  <div style="text-align: center; margin-bottom: 1rem">
+    <a href="{% url 'inicio' %}" class="btn-home">
+      <span class="btn-icon">🏠</span> Regresar a Inicio
+    </a>
+  </div>
+
+  <!-- Mis mascotas y citas próximas -->
+  <div class="dashboard-grid">
     <!-- Mis Mascotas -->
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h2 class="text-xl font-bold mb-4 text-gray-800 flex items-center">
-        <span class="mr-2">🐾</span> Mis Mascotas
-      </h2>
+    <div class="content-card">
+      <h2>🐾 Mis Mascotas</h2>
       {% if mis_mascotas %}
-      <div class="space-y-4">
+      <div class="item-list">
         {% for mascota in mis_mascotas %}
-        <div class="border rounded-lg p-4 hover:bg-gray-50 transition">
-          <h3 class="font-semibold text-lg">{{ mascota.nombre }}</h3>
-          <p class="text-gray-600">
-            {{ mascota.especie }} - {{ mascota.raza }}
+        <div class="item-card">
+          <h3>{{ mascota.nombre }}</h3>
+          <p><strong>Especie: </strong>{{ mascota.especie }}</p>
+          <p>
+            <strong>Raza:</strong>
+            {{mascota.raza|default:"Sinrazaespecificada"}}
           </p>
-          <p class="text-sm text-gray-500">Edad: {{ mascota.edad }} años</p>
+          <p><strong>Edad:</strong> {{ mascota.edad }} años</p>
         </div>
         {% endfor %}
       </div>
       {% else %}
-      <p class="text-gray-500 italic">No tienes mascotas registradas.</p>
-      <a
-        href="{% url 'agregar_mascota' %}"
-        class="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-      >
-        Registrar Mascota
-      </a>
+      <div class="empty-message">
+        <p>No tienes mascotas registradas.</p>
+        <a href="{% url 'registrar_mascota' %}" class="btn">
+          Registrar Mascota
+        </a>
+      </div>
       {% endif %}
     </div>
 
     <!-- Mis Citas Próximas -->
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h2 class="text-xl font-bold mb-4 text-gray-800 flex items-center">
-        <span class="mr-2">📅</span> Próximas Citas
-      </h2>
+    <div class="content-card">
+      <h2>📅 Próximas Citas</h2>
       {% if citas_proximas %}
-      <div class="space-y-4">
+      <div class="item-list">
         {% for cita in citas_proximas %}
-        <div class="border rounded-lg p-4 hover:bg-gray-50 transition">
-          <h3 class="font-semibold">{{ cita.servicio }}</h3>
-          <p class="text-gray-600">
-            {{ cita.fecha_cita|date:"d/m/Y" }} a las {{
-            cita.hora_cita|time:"H:i" }}
+        <div class="item-card">
+          <h3>{{ cita.tipo_servicio|default:"Consulta" }}</h3>
+          <p>
+            <strong>Fecha:</strong> {{ cita.fecha_cita|date:"d/m/Y" }} a las
+            {{cita.hora_cita|time:"H:i" }}
           </p>
-          <p class="text-sm text-gray-500">
-            Mascota: {{ cita.mascota.nombre }}
+          <p><strong>Mascota:</strong> {{ cita.mascota|default:"-" }}</p>
+          <p>
+            <strong>Estado:</strong>
+            <span
+              class="badge {% if cita.estado == 'confirmada' %}badge-confirmed{% else %}badge-pending{% endif %}"
+            >
+              {{ cita.get_estado_display|default:"Pendiente" }}
+            </span>
           </p>
         </div>
         {% endfor %}
       </div>
       {% else %}
-      <p class="text-gray-500 italic">No tienes citas programadas.</p>
-      <a
-        href="{% url 'agendar_cita' %}"
-        class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-      >
-        Agendar Cita
-      </a>
+      <div class="empty-message">
+        <p>No tienes citas programadas.</p>
+        <a href="{% url 'citas:crear_cita' %}" class="btn btn-blue"
+          >Agendar Cita</a
+        >
+      </div>
       {% endif %}
     </div>
   </div>
 
+  <!-- Mis citas recientes -->
+  {% if mis_citas %}
+  <div class="table-container">
+    <h2>📋 Mis Últimas Citas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Mascota</th>
+          <th>Servicio</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cita in mis_citas %}
+        <tr>
+          <td>{{ cita.fecha_cita|date:"d/m/Y" }}</td>
+          <td>{{ cita.mascota|default:"-" }}</td>
+          <td>{{ cita.tipo_servicio|default:"Consulta" }}</td>
+          <td>
+            <span
+              class="badge {% if cita.estado == 'confirmada' %}badge-confirmed{% else %}badge-pending{% endif %}"
+            >
+              {{ cita.get_estado_display|default:"Pendiente" }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
   <!-- Acciones rápidas -->
-  <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-    <a
-      href="{% url 'agendar_cita' %}"
-      class="bg-green-600 text-white p-4 rounded-lg text-center hover:bg-green-700 transition"
-    >
-      <span class="block text-2xl mb-2">📅</span>
-      <span class="font-semibold">Agendar Cita</span>
+  <div class="quick-actions">
+    <a href="{% url 'citas:crear_cita' %}" class="action-card">
+      <span class="action-icon">📅</span>
+      <h3>Agendar Cita</h3>
+      <p>Programa una nueva cita para tu mascota</p>
     </a>
 
-    <a
-      href="{% url 'ver_pedidos' %}"
-      class="bg-blue-600 text-white p-4 rounded-lg text-center hover:bg-blue-700 transition"
-    >
-      <span class="block text-2xl mb-2">🛒</span>
-      <span class="font-semibold">Mis Pedidos</span>
+    <a href="{% url 'mi_pedido' %}" class="action-card">
+      <span class="action-icon">🛒</span>
+      <h3>Mis Pedidos</h3>
+      <p>Revisa tus pedidos y compras realizadas</p>
     </a>
 
-    <a
-      href="{% url 'agregar_mascota' %}"
-      class="bg-yellow-600 text-white p-4 rounded-lg text-center hover:bg-yellow-700 transition"
-    >
-      <span class="block text-2xl mb-2">🐶</span>
-      <span class="font-semibold">Registrar Mascota</span>
+    <a href="{% url 'registrar_mascota' %}" class="action-card">
+      <span class="action-icon">🐶</span>
+      <h3>Registrar Mascota</h3>
+      <p>Agrega una nueva mascota a tu perfil</p>
     </a>
   </div>
 </div>

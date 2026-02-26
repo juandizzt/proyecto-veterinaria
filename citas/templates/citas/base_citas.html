@@ -1,471 +1,214 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Sistema de Citas - Veterinaria{% endblock %}</title>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: "Arial", sans-serif;
-        background: #f5f5f5;
-        color: #333;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        padding-top: 80px; /* Espacio para el header fijo */
-      }
-
-      /* Header fijo - IDÉNTICO AL PRINCIPAL */
-      header {
-        background: linear-gradient(135deg, #4caf50, #66bb6a);
-        color: white;
-        padding: 0;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        position: fixed;
-        top: 0;
-        width: 100%;
-        z-index: 1000;
-      }
-
-      .nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-
-      /* Contenedor del logo rectangular */
-      .logo-img {
-        width: 160px; /* Ancho rectangular */
-        height: 60px; /* Alto menor que ancho */
-        border-radius: 8px; /* Esquinas ligeramente redondeadas */
-        overflow: hidden; /* Para que la imagen no sobresalga */
-        border: 2px solid white; /* Borde blanco */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra suave */
-        flex-shrink: 0; /* Evita que se reduzca */
-        background-color: white; /* Fondo blanco por si la imagen no carga */
-      }
-
-      /* Imagen dentro del logo */
-      .logo-img img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain; /* Ajusta la imagen sin deformarla */
-        display: block;
-        padding: 2px; /* Un poco de espacio interno */
-      }
-
-      .logo h1 {
-        font-size: 2.2rem;
-        font-weight: bold;
-        color: white !important;
-        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-        white-space: nowrap;
-        margin: 0;
-        line-height: 1;
-      }
-
-      .nav-links {
-        display: flex;
-        gap: 1.5rem;
-      }
-
-      .nav-links a {
-        color: white;
-        text-decoration: none;
-        font-weight: 500;
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-        position: relative;
-      }
-
-      .nav-links a:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-      }
-
-      .nav-links a:after {
-        content: "";
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: 0;
-        left: 50%;
-        background-color: white;
-        transition: all 0.3s ease;
-      }
-
-      .nav-links a:hover:after {
-        width: 80%;
-        left: 10%;
-      }
-
-      /* Contenido principal separado del header */
-      .main-content {
-        flex: 1;
-        width: 100%;
-        padding: 20px 0;
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-      }
-
-      /* Footer fijo - IDÉNTICO AL PRINCIPAL */
-      footer {
-        background: linear-gradient(135deg, #4caf50, #66bb6a);
-        color: white;
-        padding: 1.5rem 0;
-        margin-top: auto;
-        width: 100%;
-      }
-
-      .footer-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        gap: 1.5rem;
-      }
-
-      .footer-content div {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .footer-content strong {
-        color: #e8f5e9;
-        font-weight: 600;
-      }
-
-      /* ESTILOS ESPECÍFICOS PARA LA PÁGINA DE INICIO - CENTRADO TOTAL */
-      .home-container {
-        text-align: center;
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 40px 20px;
-      }
-
-      .home-title {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        color: #4caf50;
-        text-align: center;
-      }
-
-      .home-subtitle {
-        font-size: 1.2rem;
-        margin-bottom: 3rem;
-        line-height: 1.6;
-        color: #666;
-        text-align: center;
-      }
-
-      .features-list {
-        list-style: none;
-        text-align: left;
-        margin-bottom: 3rem;
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-
-      .feature-item {
-        margin-bottom: 25px;
-        padding-bottom: 25px;
-        border-bottom: 1px solid #eee;
-      }
-
-      .feature-item:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none;
-      }
-
-      .feature-title {
-        font-size: 1.3rem;
-        color: #4caf50;
-        margin-bottom: 10px;
-        font-weight: bold;
-      }
-
-      .feature-description {
-        color: #666;
-        line-height: 1.5;
-        margin-bottom: 15px;
-      }
-
-      .feature-button {
-        display: block;
-        width: 100%;
-        padding: 12px 25px;
-        background: #4caf50;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1.1rem;
-        text-align: center;
-      }
-
-      .feature-button:hover {
-        background: #45a049;
-        transform: translateY(-2px);
-      }
-
-      /* Estilos generales */
-      .btn {
-        display: inline-block;
-        padding: 12px 25px;
-        background: #4caf50;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1.1rem;
-        min-width: 180px;
-      }
-
-      .btn:hover {
-        background: #45a049;
-        transform: translateY(-2px);
-      }
-
-      .btn-danger {
-        background: #e74c3c;
-      }
-
-      .btn-danger:hover {
-        background: #c0392b;
-      }
-
-      .card {
-        background: white;
-        padding: 25px;
-        margin: 20px 0;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        border-left: 4px solid #66bb6a;
-      }
-
-      .form-group {
-        margin-bottom: 15px;
-      }
-
-      .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #4caf50;
-      }
-
-      .form-control {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 16px;
-      }
-
-      .form-control:focus {
-        border-color: #4caf50;
-        outline: none;
-      }
-
-      .messages {
-        margin: 20px 0;
-      }
-
-      .alert {
-        padding: 15px;
-        border-radius: 4px;
-        margin: 10px 0;
-      }
-
-      .alert-success {
-        background: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-      }
-
-      .cita-card {
-        border-left: 4px solid #4caf50;
-        padding: 15px;
-        margin: 10px 0;
-        background: white;
-        border-radius: 4px;
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
+        /* Estilos Base y Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-          padding-top: 100px; /* Más padding para header en móvil */
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8faf9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 90px;
+        }
+
+        /* Header La Pradera */
+        header {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
         }
 
         .nav {
-          flex-direction: column;
-          gap: 10px;
-          padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
+        .logo { display: flex; align-items: center; gap: 1rem; }
         .logo-img {
-          width: 120px;
-          height: 50px;
+            width: 140px; height: 55px; border-radius: 8px;
+            background: white; border: 2px solid white; overflow: hidden;
         }
-
-        .logo h1 {
-          font-size: 1.8rem;
-        }
-
-        .nav-links {
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 8px;
-        }
+        .logo-img img { width: 100%; height: 100%; object-fit: contain; }
+        .logo h1 { font-size: 1.8rem; color: white !important; margin: 0; }
 
         .nav-links a {
-          font-size: 0.9rem;
-          padding: 6px 12px;
+            color: white; text-decoration: none; font-weight: 500;
+            padding: 0.6rem 1.2rem; border-radius: 8px; transition: 0.3s;
+        }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+
+        /* Contenedor Principal */
+        .main-content { flex: 1; padding: 30px 0; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        /* --- ESTILOS DE TABLAS Y CARDS (Para Mis Citas) --- */
+        .card-global {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-top: 5px solid #4caf50;
         }
 
-        .footer-content {
-          flex-direction: column;
-          text-align: center;
-          gap: 0.8rem;
+        .table-responsive { overflow-x: auto; margin-top: 20px; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
         }
 
-        .footer-content div {
-          justify-content: center;
+        th {
+            background-color: #f1f8e9;
+            color: #2e7d32;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+            border-bottom: 2px solid #e8f5e9;
         }
 
-        .home-title {
-          font-size: 2rem;
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
         }
 
-        .home-container {
-          max-width: 90%;
-          padding: 20px 10px;
+        tr:hover { background-color: #fafafa; }
+
+        /* Badge de estado */
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: #e8f5e9;
+            color: #2e7d32;
         }
 
-        .features-list {
-          padding: 20px;
+        /* Botón de acción rápido */
+        .btn-small {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            background: #4caf50;
+            color: white;
+            transition: 0.3s;
         }
-      }
+
+        .btn-small:hover { background: #388e3c; }
+
+        /* Footer */
+        footer {
+            background: #4caf50; color: white; padding: 1.2rem 0;
+            text-align: center; font-size: 0.9rem; margin-top: auto;
+        }
+
+    /* Contenedor principal (la barra verde) */
+.nav-user-container {
+    background-color: #63b965; /* El verde exacto de la imagen */
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-user-content {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Espacio entre el texto y el botón */
+    font-family: Arial, sans-serif;
+}
+
+/* Texto de "Bienvenido" */
+.welcome-text {
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+/* El nombre del usuario (enlace) */
+.user-name {
+    color: white;
+    text-decoration: none; /* Quita el subrayado */
+    font-weight: normal;
+    margin-left: 20px;
+}
+
+/* Botón de Cerrar Sesión */
+.btn-logout {
+    background-color: rgba(255, 255, 255, 0.2); /* Fondo blanco semitransparente */
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px; /* Bordes redondeados */
+    font-size: 16px;
+    transition: background 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: rgba(255, 255, 255, 0.3); /* Se aclara un poco al pasar el mouse */
+}
     </style>
-  </head>
-  <body>
-    <!-- Header fijo - ADAPTADO AL PRINCIPAL -->
+</head>
+<body>
     <header>
-      <nav class="nav">
-        <div class="logo">
-          <div class="logo-img">
-            {% load static %}
-            <img
-              src="{% static 'imagenes/praderas.jpg' %}"
-              alt="Logo Veterinaria La Pradera"
-            />
-          </div>
-          <h1>La Pradera</h1>
-        </div>
-        <!-- En la sección de navegación, agregar: -->
-        <div class="nav-links">
-          <a href="{% url 'inicio' %}">Inicio</a>
-          <a href="{% url 'nosotros'%}">Nosotros</a>
-          <a href="{% url 'lista' %}">Productos</a>
-          <a
-            href="{% url 'citas:lista_citas' %}"
-            style="background-color: rgba(255, 255, 255, 0.3)"
-            >Mis Citas</a
-          >
-
-          <!-- ENLACES PARA EMPLEADOS Y VETERINARIOS -->
-          {% if user.es_empleado or user.es_veterinario %}
-          <a href="{% url 'citas:citas_hoy' %}">Citas Hoy</a>
-          <a href="{% url 'citas:citas_pendientes' %}">Pendientes</a>
-          {% endif %}
-
-          <!-- ENLACES PARA ADMINISTRADORES -->
-          {% if user.es_admin %}
-          <a href="{% url 'citas:historial_citas' %}">Historial</a>
-          <a href="{% url 'citas:listado_mascotas' %}">Mascotas</a>
-          {% endif %}
-        </div>
-      </nav>
+        <nav class="nav">
+            <div class="logo">
+                <div class="logo-img">
+                    {% load static %}
+                    <img src="{% static 'imagenes/praderas.jpg' %}" alt="Logo">
+                </div>
+                <h1>La Pradera</h1>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'inicio' %}">Inicio</a>
+                <a href="{% url 'nosotros'%}">Nosotros</a>
+                <a href="{% url 'lista' %}">Productos</a>
+                <a href="{% url 'citas:lista_citas' %}" style="background: rgba(255,255,255,0.3)">Mis Citas</a>
+            </div>
+<div class="nav-user-container">
+  {% if user.is_authenticated %}
+    <div class="nav-user-content">
+      <span class="welcome-text">
+        Bienvenido <a href="{% url 'dashboard' %}" class="user-name">{{ user.username }}</a>
+      </span>
+      <a href="{% url 'logout' %}" class="btn-logout">
+        Cerrar Sesión
+      </a>
+    </div>
+  {% endif %}
+</div>
+        </nav>
     </header>
 
-    <!-- Contenido principal separado -->
     <main class="main-content">
-      <div class="container">
-        {% if messages %}
-        <div class="messages">
-          {% for message in messages %}
-          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-          {% endfor %}
+        <div class="container">
+            {% block content %}{% endblock %}
         </div>
-        {% endif %} {% block content %}
-        <!-- CONTENIDO DE LA PÁGINA DE INICIO - MEJOR ORGANIZACIÓN -->
-        <div class="home-container">
-          <h1 class="home-title">Bienvenido al Sistema de Citas</h1>
-          <p class="home-subtitle">
-            Gestiona las citas de tus mascotas de forma fácil y rápida.
-          </p>
-
-          <ul class="features-list">
-            <li class="feature-item">
-              <div class="feature-title">Agendar Cita</div>
-              <p class="feature-description">
-                Programa una nueva cita para tu mascota
-              </p>
-              <a href="{% url 'citas:crear_cita' %}" class="feature-button"
-                >Agendar Nueva Cita</a
-              >
-            </li>
-            <li class="feature-item">
-              <div class="feature-title">Ver Mis Citas</div>
-              <p class="feature-description">
-                Consulta y gestiona tus citas existentes
-              </p>
-              <a href="{% url 'citas:lista_citas' %}" class="feature-button"
-                >Ver Mis Citas</a
-              >
-            </li>
-          </ul>
-        </div>
-        {% endblock %}
-      </div>
     </main>
 
-    <!-- Footer - ADAPTADO AL PRINCIPAL -->
-    <footer>
-      <div class="footer-content">
-        <div>🏠︎<strong>Ubicación:</strong> Carrea 144 Barrio El Salado</div>
-        <div>☏<strong>Telefono:</strong> 3212345673</div>
-        <div>✉<strong>Correo:</strong> lapradera@gmail.com</div>
-      </div>
-    </footer>
-  </body>
+<footer>
+  <div class="footer-content" style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px; max-width: 1100px; margin: 0 auto; padding: 0 20px;">
+    <div class="footer-item">🏠︎ <strong>Ubicación:</strong> Carrea 144 Barrio El Salado</div>
+    <div class="footer-item">☏ <strong>Teléfono:</strong> 3212345673</div>
+    <div class="footer-item">✉ <strong>Correo:</strong> lapradera@gmail.com</div>
+  </div>
+</footer>
+    
+</body>
 </html>

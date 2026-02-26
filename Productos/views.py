@@ -1,11 +1,40 @@
 # Productos/views.py - VERSIÓN COMPLETA CORREGIDA
-from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required  # ¡ESTO FALTABA!
 from django.http import JsonResponse
 from .models import Producto
 from django.db.models import Sum
 import json
 from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+
+def es_administrador(user):
+    return user.is_superuser or user.groups.filter(name='admin').exists()
+
+@login_required
+@user_passes_test(es_administrador)
+def agregar_producto(request):
+    if request.method == 'POST':
+        try:
+            nombre = request.POST.get('nombre')
+            precio = request.POST.get('precio')
+            descripcion = request.POST.get('descripcion')
+            stock = request.POST.get('stock')
+            imagen = request.FILES.get('imagen')
+            
+            producto = Producto.objects.create(
+                nombre=nombre,
+                precio=precio,
+                descripcion=descripcion,
+                stock=stock,
+                imagen=imagen
+            )
+            
+            return redirect('lista_productos')
+        except Exception as e:
+            print(f"Error al crear producto: {e}")
+    
+    return render(request, 'Productos/agregar_producto.html')
 
 # 1. FUNCIÓN PARA LISTAR PRODUCTOS (DEBE EXISTIR)
 def ProductoListView(request):

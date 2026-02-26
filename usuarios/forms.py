@@ -107,7 +107,7 @@ class CustomUserCreationForm(UserCreationForm):
         # Guardar nombre completo en first_name
         nombre_completo = self.cleaned_data.get('nombre_completo')
         if nombre_completo:
-            user.first_name = nombre_completo
+            user.first_name = nombre_completo.strip().title()  # ← MAYÚSCULA INICIAL EN CADA PALABRA
         
         # Guardar teléfono si existe
         telefono = self.cleaned_data.get('telefono')

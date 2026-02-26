@@ -1,95 +1,627 @@
-<!-- usuarios/templates/usuarios/dashboard_admin.html -->
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} 
+{% load static %} {% block content %}
 
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-6 text-green-700">
-    Dashboard Administrador
-  </h1>
+<style>
+  .container-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f7f6;
+  }
 
-  <!-- Tarjetas de resumen -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-green-500">
-      <h3 class="text-lg font-semibold text-gray-700">Usuarios</h3>
-      <p class="text-3xl font-bold text-green-600">{{ total_usuarios }}</p>
-      <p class="text-sm text-gray-500">Total registrados</p>
+  h1 {
+    color: #2e7d32;
+    text-align: center;
+    margin-bottom: 3rem;
+    font-size: 2.5rem;
+    border-bottom: 3px solid #4caf50;
+    padding-bottom: 1rem;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
+    border-top: 5px solid;
+  }
+
+  .stat-card:hover { transform: translateY(-5px); }
+  .stat-card:nth-child(1) { border-color: #4caf50; }
+  .stat-card:nth-child(2) { border-color: #2196f3; }
+  .stat-card:nth-child(3) { border-color: #ff9800; }
+  .stat-card:nth-child(4) { border-color: #f44336; }
+  .stat-number { font-size: 2.5rem; font-weight: bold; margin: 0.5rem 0; }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .content-grid .content-card:nth-of-type(3) { grid-column: 1 / span 2; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .content-grid { grid-template-columns: 1fr; }
+    .content-grid .content-card:nth-of-type(3) { grid-column: auto; }
+    .form-grid { grid-template-columns: 1fr !important; }
+  }
+
+  .content-card {
+    background: white;
+    border-radius: 18px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border-left: 6px solid #4caf50;
+  }
+
+  .content-card h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid #eee;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { background: #4caf50; color: white; padding: 0.9rem 1rem; text-align: left; }
+  td { padding: 0.9rem 1rem; border-bottom: 1px solid #f1f1f1; font-size: 0.9rem; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f9fdf9; }
+
+  /* Botón ver detalle */
+  .btn-detalle {
+    padding: 0.4rem 0.9rem;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1.5px solid #4caf50;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-detalle:hover { background: #4caf50; color: white; }
+
+  /* ── MODAL DETALLE PEDIDO ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+    padding: 1rem;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal-box {
+    background: white;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+    animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes popIn {
+    from { opacity:0; transform:scale(0.85); }
+    to   { opacity:1; transform:scale(1); }
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header h3 { margin: 0; font-size: 1.3rem; }
+
+  .modal-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items:center; justify-content:center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.4); }
+
+  .modal-body { padding: 1.8rem 2rem; }
+
+  .modal-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background: #f8fdf8;
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .modal-info-item label {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .modal-info-item span {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 0.95rem;
+  }
+
+  .modal-products-title {
+    font-weight: 700;
+    color: #2e7d32;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    border-bottom: 2px solid #e8f5e9;
+    padding-bottom: 0.5rem;
+  }
+
+  .modal-product-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    margin-bottom: 0.7rem;
+    transition: border-color 0.2s;
+  }
+  .modal-product-item:hover { border-color: #4caf50; }
+
+  .modal-product-img {
+    width: 56px; height: 56px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #f0f0f0;
+    flex-shrink: 0;
+  }
+
+  .modal-product-img-placeholder {
+    width: 56px; height: 56px;
+    border-radius: 10px;
+    background: #e8f5e9;
+    display: flex; align-items:center; justify-content:center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+  }
+
+  .modal-product-info { flex: 1; }
+  .modal-product-name { font-weight: 700; color: #2c3e50; font-size: 0.95rem; }
+  .modal-product-qty { color: #666; font-size: 0.85rem; margin-top: 0.15rem; }
+
+  .modal-product-subtotal {
+    font-weight: 700;
+    color: #2e7d32;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .modal-total-bar {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: white;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.2rem;
+  }
+
+  .modal-total-bar .label { font-size: 0.9rem; opacity: 0.9; }
+  .modal-total-bar .amount { font-size: 1.5rem; font-weight: 800; }
+
+  #modal-loading { text-align:center; padding: 2rem; color:#888; }
+
+  /* ── FORM CARD ── */
+  .form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    margin: 4rem 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-top: 8px solid #2e7d32;
+  }
+
+  .form-card h2 { color: #2e7d32; text-align:center; margin-bottom: 2.5rem; font-weight:700; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+  .form-group { display:flex; flex-direction:column; gap: 0.5rem; }
+  .form-group label { color:#388e3c; font-weight:600; font-size:0.9rem; }
+
+  .form-control {
+    padding: 0.8rem 1rem;
+    border: 2px solid #e0eadd;
+    border-radius: 10px;
+    background-color: #fafdfb;
+    transition: all 0.3s;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #4caf50;
+    box-shadow: 0 0 0 3px rgba(76,175,80,0.1);
+  }
+
+  .form-group.full-width { grid-column: 1 / -1; }
+
+  /* Upload de imagen */
+  .img-upload-area {
+    border: 2px dashed #a5d6a7;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #f9fdf9;
+    position: relative;
+  }
+  .img-upload-area:hover { border-color: #4caf50; background: #f0faf0; }
+  .img-upload-area input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width:100%; height:100%;
+  }
+  .img-upload-icon { font-size: 2rem; margin-bottom: 0.3rem; }
+  .img-upload-text { color: #666; font-size: 0.88rem; }
+  .img-upload-text strong { color: #4caf50; }
+  #img-preview {
+    max-width: 100%; max-height: 120px;
+    border-radius: 10px; margin-top: 0.8rem;
+    display: none; object-fit: contain;
+  }
+
+  /* Badges */
+  .badge { padding: 0.35rem 0.7rem; border-radius: 6px; font-weight:700; font-size:0.78rem; white-space:nowrap; }
+  .badge-confirmado   { background:#e3f2fd; color:#1565c0; }
+  .badge-completed { background:#e8f5e9; color:#2e7d32; }
+  .badge-pending   { background:#fff3e0; color:#ef6c00; }
+  .badge-cancelled { background:#ffebee; color:#c62828; }
+
+  /* Botones */
+  .action-btn {
+    padding: 0.9rem 2rem;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.3s;
+    font-size: 0.95rem;
+  }
+  .action-btn:hover { background: #388e3c; color: white; }
+
+  .quick-actions { display:flex; justify-content:center; gap:1.5rem; padding:2rem 0; flex-wrap:wrap; }
+  .btn-home { text-decoration:none; color:#4caf50; font-weight:bold; display:inline-block; margin-bottom:1rem; }
+  .empty-message { color:#999; font-style:italic; padding:1rem 0; }
+</style>
+
+<!-- ── MODAL DETALLE PEDIDO ── -->
+<div class="modal-overlay" id="detallePedidoModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>🛒 Detalle del Pedido</h3>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
     </div>
-
-    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-500">
-      <h3 class="text-lg font-semibold text-gray-700">Mascotas</h3>
-      <p class="text-3xl font-bold text-blue-600">{{ total_mascotas }}</p>
-      <p class="text-sm text-gray-500">Registradas</p>
-    </div>
-
-    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-yellow-500">
-      <h3 class="text-lg font-semibold text-gray-700">Citas</h3>
-      <p class="text-3xl font-bold text-yellow-600">{{ total_citas }}</p>
-      <p class="text-sm text-gray-500">Programadas</p>
-    </div>
-
-    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-red-500">
-      <h3 class="text-lg font-semibold text-gray-700">Pedidos</h3>
-      <p class="text-3xl font-bold text-red-600">{{ total_pedidos }}</p>
-      <p class="text-sm text-gray-500">Realizados</p>
-    </div>
-  </div>
-
-  <!-- Usuarios recientes -->
-  <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-    <h2 class="text-xl font-bold mb-4 text-gray-800">Usuarios Recientes</h2>
-    <div class="overflow-x-auto">
-      <table class="min-w-full">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="py-3 px-4 text-left">Usuario</th>
-            <th class="py-3 px-4 text-left">Nombre</th>
-            <th class="py-3 px-4 text-left">Rol</th>
-            <th class="py-3 px-4 text-left">Fecha Registro</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for usuario in usuarios_recientes %}
-          <tr class="border-b hover:bg-gray-50">
-            <td class="py-3 px-4">{{ usuario.username }}</td>
-            <td class="py-3 px-4">{{ usuario.first_name }}</td>
-            <td class="py-3 px-4">
-              <span
-                class="px-2 py-1 rounded-full text-xs font-semibold {% if usuario.rol == 'admin' %}bg-red-100 text-red-800 {% elif usuario.rol == 'empleado' %}bg-blue-100 text-blue-800 {% elif usuario.rol == 'veterinario' %}bg-purple-100 text-purple-800 {% else %}bg-green-100 text-green-800{% endif %}"
-              >
-                {{ usuario.get_rol_display }}
-              </span>
-            </td>
-            <td class="py-3 px-4">{{ usuario.date_joined|date:"d/m/Y" }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Acciones rápidas -->
-  <div class="bg-white rounded-lg shadow-lg p-6">
-    <h2 class="text-xl font-bold mb-4 text-gray-800">Acciones Rápidas</h2>
-    <div class="flex flex-wrap gap-4">
-      <a
-        href="{% url 'lista_usuarios' %}"
-        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-      >
-        Gestionar Usuarios
-      </a>
-      <a
-        href="/admin"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-      >
-        Panel de Administración
-      </a>
-      <a
-        href="#"
-        class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition"
-      >
-        Ver Reportes
-      </a>
+    <div class="modal-body" id="modal-content">
+      <div id="modal-loading">Cargando...</div>
     </div>
   </div>
 </div>
+
+<div class="container-dashboard">
+  <h1>Dashboard Administrador</h1>
+
+  <div class="home-nav-container">
+    <a href="{% url 'inicio' %}" class="btn-home">🏠 Regresar a Inicio</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <a href="{% url 'lista_usuarios' %}" class="stat-card">
+      <h3>Usuarios</h3>
+      <div class="stat-number">{{ total_usuarios }}</div>
+      <p>Total registrados</p>
+    </a>
+    <div class="stat-card">
+      <h3>Mascotas</h3>
+      <div class="stat-number">{{ total_mascotas }}</div>
+      <p>Registradas</p>
+    </div>
+    <div class="stat-card">
+      <h3>Citas</h3>
+      <div class="stat-number">{{ total_citas }}</div>
+      <p>Programadas</p>
+    </div>
+    <div class="stat-card">
+      <h3>Pedidos</h3>
+      <div class="stat-number">{{ total_pedidos }}</div>
+      <p>Realizados</p>
+    </div>
+  </div>
+
+  <!-- Contenido -->
+  <div class="content-grid">
+    <!-- Mascotas -->
+    <div class="content-card">
+      <h2>🐾 Mascotas Registradas</h2>
+      {% if mascotas_registradas %}
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>Nombre</th><th>Dueño</th><th>Especie</th><th>Edad</th></tr></thead>
+          <tbody>
+            {% for mascota in mascotas_registradas %}
+            <tr>
+              <td>{{ mascota.nombre|default:"Sin nombre" }}</td>
+              <td>{{ mascota.dueño.username|default:"Sin dueño" }}</td>
+              <td>{{ mascota.especie|default:"-" }}</td>
+              <td>{{ mascota.edad }} años</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="empty-message">No hay mascotas registradas</p>{% endif %}
+    </div>
+
+    <!-- Citas -->
+    <div class="content-card">
+      <h2>📅 Citas Recientes</h2>
+      {% if citas_recientes %}
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>Cliente</th><th>Mascota</th><th>Fecha</th><th>Servicio</th></tr></thead>
+          <tbody>
+            {% for cita in citas_recientes %}
+            <tr>
+              <td>{{ cita.propietario.username|default:"-" }}</td>
+              <td>{{ cita.mascota|default:"-" }}</td>
+              <td>{{ cita.fecha_cita|date:"d/m/Y" }}</td>
+              <td>{{ cita.servicio|default:"Consulta" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="empty-message">No hay citas programadas</p>{% endif %}
+    </div>
+
+    <!-- Pedidos con Ver Detalle -->
+    <div class="content-card">
+      <h2>🛒 Pedidos Recientes</h2>
+      {% if pedidos_recientes %}
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Detalle</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pedido in pedidos_recientes %}
+            <tr>
+              <td>{{ pedido.usuario.username|default:"-" }}</td>
+              <td>{{ pedido.fecha|date:"d/m/Y" }}</td>
+              <td>${{ pedido.total|floatformat:0 }}</td>
+              <td>
+                <span class="badge 
+                  {% if pedido.estado == 'CONFIRMADO' %}badge-confirmado
+                  {% elif pedido.estado == 'PAGADO' %}badge-completed
+                  {% elif pedido.estado == 'ENVIADO' %}badge-completed
+                  {% elif pedido.estado == 'CANCELADO' %}badge-cancelled
+                  {% else %}badge-pending{% endif %}">
+                  {{ pedido.get_estado_display|default:pedido.estado }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-detalle" onclick="verDetalle({{ pedido.id }})">
+                  👁 Ver Detalle
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}<p class="empty-message">No hay pedidos realizados</p>{% endif %}
+    </div>
+  </div>
+
+  <!-- Formulario Agregar Producto CON IMAGEN -->
+  <div class="form-card">
+    <h2>➕ Agregar Nuevo Producto</h2>
+    <form method="POST" action="{% url 'agregar_producto' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre del Producto *</label>
+          <input type="text" name="nombre" required class="form-control" placeholder="Ej: Dog Chow">
+        </div>
+        <div class="form-group">
+          <label>Precio *</label>
+          <input type="number" name="precio" step="0.01" required class="form-control" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label>Stock *</label>
+          <input type="number" name="stock" required class="form-control" placeholder="0">
+        </div>
+        <div class="form-group full-width">
+          <label>Descripción *</label>
+          <textarea name="descripcion" rows="3" required class="form-control" placeholder="Describe el producto..."></textarea>
+        </div>
+        <!-- ✅ NUEVO: Campo de imagen -->
+        <div class="form-group full-width">
+          <label>Imagen del Producto</label>
+          <div class="img-upload-area" id="uploadArea">
+            <input type="file" name="imagen" accept="image/*" id="imgInput" onchange="previewImagen(this)">
+            <div class="img-upload-icon">📷</div>
+            <div class="img-upload-text">
+              <strong>Haz clic para subir</strong> o arrastra una imagen aquí<br>
+              <small>PNG, JPG, WEBP — máx. 5MB</small>
+            </div>
+            <img id="img-preview" src="" alt="Vista previa">
+          </div>
+        </div>
+      </div>
+      <div style="text-align:right; margin-top:1.5rem">
+        <button type="submit" class="action-btn">Agregar Producto</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="quick-actions">
+    <a href="{% url 'lista_usuarios' %}" class="action-btn">👥 Gestionar Usuarios</a>
+    <a href="/admin" class="action-btn">⚙️ Panel Django</a>
+  </div>
+</div>
+
+<script>
+// ── Vista previa de imagen ──────────────────────────────────────────────────
+function previewImagen(input) {
+  const preview = document.getElementById('img-preview');
+  const area = document.getElementById('uploadArea');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      area.style.borderColor = '#4caf50';
+      area.style.borderStyle = 'solid';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// ── Modal detalle pedido ────────────────────────────────────────────────────
+function verDetalle(pedidoId) {
+  const modal = document.getElementById('detallePedidoModal');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = '<div id="modal-loading">⏳ Cargando detalle...</div>';
+  modal.classList.add('active');
+
+  fetch(`/pedidos/detalle-admin/${pedidoId}/`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        content.innerHTML = `<p style="color:red">Error: ${data.error}</p>`;
+        return;
+      }
+
+      const estadoClass = data.estado.toLowerCase().includes('envi') ? 'badge-confirmado'
+                        : data.estado.toLowerCase().includes('complet') ? 'badge-completed'
+                        : data.estado.toLowerCase().includes('cancel') ? 'badge-cancelled'
+                        : 'badge-pending';
+
+      let itemsHTML = '';
+      data.items.forEach(item => {
+        const imgHTML = item.imagen
+          ? `<img src="${item.imagen}" class="modal-product-img" alt="${item.producto}">`
+          : `<div class="modal-product-img-placeholder">🐾</div>`;
+
+        itemsHTML += `
+          <div class="modal-product-item">
+            ${imgHTML}
+            <div class="modal-product-info">
+              <div class="modal-product-name">${item.producto}</div>
+              <div class="modal-product-qty">Cantidad: ${item.cantidad} &nbsp;×&nbsp; $${item.precio_unit.toLocaleString('es-CO')}</div>
+            </div>
+            <div class="modal-product-subtotal">$${item.subtotal.toLocaleString('es-CO')}</div>
+          </div>`;
+      });
+
+      if (!itemsHTML) {
+        itemsHTML = '<p style="color:#999;font-style:italic">Este pedido no tiene productos registrados.</p>';
+      }
+
+      content.innerHTML = `
+        <div class="modal-info-grid">
+          <div class="modal-info-item">
+            <label>Cliente</label>
+            <span>${data.cliente}</span>
+          </div>
+          <div class="modal-info-item">
+            <label>Fecha</label>
+            <span>${data.fecha}</span>
+          </div>
+          <div class="modal-info-item">
+            <label>Pedido #</label>
+            <span>${data.pedido_id}</span>
+          </div>
+          <div class="modal-info-item">
+            <label>Estado</label>
+            <span class="badge ${estadoClass}">${data.estado}</span>
+          </div>
+        </div>
+        <div class="modal-products-title">📦 Productos del pedido</div>
+        ${itemsHTML}
+        <div class="modal-total-bar">
+          <span class="label">Total del Pedido</span>
+          <span class="amount">$${data.total.toLocaleString('es-CO')}</span>
+        </div>`;
+    })
+    .catch(err => {
+      content.innerHTML = `<p style="color:red">Error al cargar el detalle. Intenta de nuevo.</p>`;
+      console.error(err);
+    });
+}
+
+function cerrarModal() {
+  document.getElementById('detallePedidoModal').classList.remove('active');
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('detallePedidoModal').addEventListener('click', function(e) {
+  if (e.target === this) cerrarModal();
+});
+
+// Cerrar con ESC
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
+</script>
 
 {% endblock %}

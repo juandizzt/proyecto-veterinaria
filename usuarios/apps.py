@@ -4,6 +4,6 @@ class UsuariosConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "usuarios"
 
-    def ready(self):    
-        # import usuarios.signals  # Comenta esto por ahora
-        pass
+    def ready(self):
+        # IMPORTANTE: Activar las señales
+        import usuarios.signals

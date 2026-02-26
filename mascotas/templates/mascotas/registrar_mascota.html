@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Contenedor que centra todo en pantalla */
+    .flex-center-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 20px;
+    }
+
+    .card-mascota {
+        background: #ffffff;
+        width: 100%;
+        max-width: 600px; /* Tamaño compacto */
+        padding: 35px;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(156, 39, 176, 0.1);
+        border: 1px solid #f0e6f5;
+        border-top: 10px solid #9c27b0; /* Color Púrpura Mascota */
+    }
+
+    .text-purple-title {
+        color: #7b1fa2;
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    /* Estilo de los inputs que inyectamos desde el form */
+    .custom-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #f1f1f1;
+        border-radius: 12px;
+        background-color: #fcfaff;
+        transition: all 0.3s ease;
+        margin-bottom: 15px;
+    }
+
+    .custom-input:focus {
+        border-color: #9c27b0;
+        background-color: #fff;
+        outline: none;
+        box-shadow: 0 0 10px rgba(156, 39, 176, 0.15);
+    }
+
+    label {
+        font-weight: 700;
+        color: #6a1b9a;
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .btn-save {
+        background: #9c27b0;
+        color: white;
+        font-weight: bold;
+        padding: 14px;
+        border-radius: 12px;
+        width: 100%;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 1rem;
+    }
+
+    .btn-save:hover {
+        background: #7b1fa2;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(156, 39, 176, 0.3);
+    }
+</style>
+
+<div class="flex-center-container">
+    <div class="card-mascota">
+        <h2 class="text-purple-title">
+            {% if form.instance.pk %}✏️ Editar Mascota{% else %}🐾 Registrar Mascota{% endif %}
+        </h2>
+        <p class="text-center text-gray-500 mb-6" style="font-size: 0.85rem;">
+            {% if form.instance.pk %}Actualizando datos de <b>{{ form.instance.nombre }}</b>{% else %}Completa la información para el nuevo paciente{% endif %}
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                <div class="col-span-2">
+                    <label>Nombre de la Mascota *</label>
+                    {{ form.nombre }}
+                </div>
+                
+                <div class="col-span-2">
+                    <label>Dueño *</label>
+                    {{ form.dueño }}
+                </div>
+
+                <div>
+                    <label>Especie *</label>
+                    {{ form.especie }}
+                </div>
+                <div>
+                    <label>Raza</label>
+                    {{ form.raza }}
+                </div>
+
+                <div>
+                    <label>Edad (años)</label>
+                    {{ form.edad }}
+                </div>
+                <div>
+                    <label>Peso (kg)</label>
+                    {{ form.peso }}
+                </div>
+            </div>
+
+            <label>Observaciones Médicas</label>
+            {{ form.observaciones }}
+
+            <div class="mt-4 flex gap-3">
+                <a href="{% url 'citas:listado_mascotas' %}" style="text-decoration:none; text-align:center; flex:1; padding:12px; color:#999; font-weight:bold;">Cancelar</a>
+                <button type="submit" class="btn-save" style="flex:2;">
+                    {% if form.instance.pk %}💾 Guardar Cambios{% else %}🐾 Registrar Paciente{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,17 +1,115 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "base.html" %} {% load static %} {% block content %}
+<style>
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; font-family: "Arial", sans-serif; }
+  
+  .header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 3px solid #ba68c8;
+    padding-bottom: 1rem;
+  }
 
-{% block content %}
-<h2>Listado de todas las mascotas registradas</h2>
+  .page-title { color: #9c27b0; font-size: 2.2rem; font-weight: 700; margin: 0; }
 
-<ul>
-    {% for m in mascotas %}
-        <li>
-            <a class="btn btn-primary" href="{% url 'historial_mascota' m %}">
-                {{ m }}
-            </a>
-        </li>
-    {% endfor %}
-</ul>
+  /* Botones de navegación */
+  .nav-buttons { display: flex; gap: 1rem; margin-bottom: 2rem; }
 
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  .btn-back:hover { background: #5a6268; transform: translateX(-3px); }
+
+  .btn-primary {
+    background: #9c27b0;
+    color: white;
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  .btn-primary:hover { background: #7b1fa2; }
+
+  /* Tabla */
+  .table-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 2px solid #9c27b0;
+  }
+  .table { width: 100%; border-collapse: collapse; }
+  .table th { background: #9c27b0; color: white; padding: 1rem; text-align: left; }
+  .table td { padding: 1rem; border-bottom: 1px solid #eee; }
+  .table tr:hover { background-color: #f8f0f9; }
+
+  /* Acciones */
+  .actions { display: flex; gap: 0.5rem; }
+  .btn-edit { background: #f8f9fa; color: #333; border: 1px solid #ddd; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; }
+  .btn-history { background: #2196f3; color: white; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; }
+  
+  /* Estilos de impresión */
+  @media print {
+    .nav-buttons, .actions, .btn-primary, .btn-back { display: none !important; }
+    .table-container { border: none; box-shadow: none; }
+    .page-title { color: black; border-bottom: 1px solid #000; }
+  }
+</style>
+
+<div class="container">
+  <div class="header-section">
+    <h1 class="page-title">Listado de Mascotas</h1>
+    <button onclick="window.print()" class="btn-edit" style="cursor:pointer">🖨️ Imprimir Listado</button>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="{% url 'dashboard_veterinario' %}" class="btn-back">⬅️ Volver al Dashboard</a>
+    <a href="{% url 'registrar_mascota' %}" class="btn-primary">+ Nueva Mascota</a>
+  </div>
+
+  {% if mascotas %}
+  <div class="table-container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Especie</th>
+          <th>Dueño</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mascota in mascotas %}
+        <tr>
+          <td><strong>{{ mascota.nombre }}</strong></td>
+          <td>{{ mascota.especie }}</td>
+          <td>{{ mascota.dueño.get_full_name|default:mascota.dueño.username }}</td>
+          <td class="actions">
+            <a href="{% url 'citas:editar_mascota' mascota.id %}" class="btn-edit">Editar</a>
+            
+            <a href="{% url 'citas:historial_mascota' mascota.id %}" class="btn-history">Ver Historial</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  function imprimirHistorial() {
+    window.print();
+  }
+</script>
 {% endblock %}

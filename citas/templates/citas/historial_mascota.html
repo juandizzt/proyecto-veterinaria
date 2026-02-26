@@ -1,36 +1,145 @@
 {% extends "base.html" %}
-{% load static %}
-
 {% block content %}
+<style>
+    .text-purple { color: #9c27b0; }
+    .bg-purple { background-color: #9c27b0; }
+    
+    /* Contenedor principal centrado y con ancho controlado */
+    .report-wrapper {
+        max-width: 750px; /* Ancho ideal para un reporte */
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    
+    /* Tarjeta de información principal */
+    .patient-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        border: 1px solid #f0f0f0;
+        border-top: 8px solid #9c27b0; /* Borde púrpura distintivo */
+    }
 
-<h2>Historial de la mascota: {{ mascota }}</h2>
+    /* Estilo para las citas previas */
+    .appointment-item {
+        background: #fdfbff;
+        border: 1px solid #f3e5f5;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: transform 0.2s;
+    }
 
-<table>
-<tr>
-    <th>Propietario</th>
-    <th>Tipo</th>
-    <th>Servicio</th>
-    <th>Fecha</th>
-    <th>Hora</th>
-    <th>Descripción</th>
-</tr>
+    .appointment-item:hover {
+        transform: scale(1.01);
+    }
 
-{% for c in citas %}
-<tr>
-    <td>{{ c.propietario.username }}</td>
-    <td>{{ c.tipo_mascota }}</td>
-    <td>{{ c.tipo_servicio }}</td>
-    <td>{{ c.fecha_cita }}</td>
-    <td>{{ c.hora_cita }}</td>
-    <td>{{ c.descripcion }}</td>
-</tr>
-{% empty %}
-<tr>
-    <td colspan="6">No hay historial para esta mascota.</td>
-</tr>
-{% endfor %}
-</table>
+    .info-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #94a3b8;
+        font-weight: bold;
+        letter-spacing: 0.05em;
+    }
 
-<a href="javascript:history.back()" class="btn btn-secondary mt-3">Volver</a>
+    .info-value {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 1.1rem;
+    }
 
+    /* Botón de impresión */
+    .btn-print {
+        background: #9c27b0;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 10px;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    @media print {
+        .btn-print, .back-link { display: none; }
+        .report-wrapper { margin: 0; max-width: 100%; }
+    }
+</style>
+
+<div class="report-wrapper">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-purple">Historial Médico</h1>
+        <p class="text-gray-500">Expediente clínico de <span class="text-purple font-bold">{{ mascota.nombre }}</span></p>
+    </div>
+
+    <div class="patient-card mb-10">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-purple flex items-center gap-2">
+                📋 Información General
+            </h2>
+            <button onclick="window.print()" class="btn-print shadow-md hover:bg-purple-700">
+                <span>Imprimir Reporte</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div>
+                <p class="info-label">Nombre</p>
+                <p class="info-value">{{ mascota.nombre }}</p>
+            </div>
+            <div>
+                <p class="info-label">Especie / Raza</p>
+                <p class="info-value">{{ mascota.especie }} - {{ mascota.raza|default:"No definida" }}</p>
+            </div>
+            <div>
+                <p class="info-label">Edad</p>
+                <p class="info-value">{{ mascota.edad }} años</p>
+            </div>
+            <div>
+                <p class="info-label">Peso Actual</p>
+                <p class="info-value">{{ mascota.peso|default:"--" }} kg</p>
+            </div>
+            <div class="md:col-span-2">
+                <p class="info-label">Dueño / Responsable</p>
+                <p class="info-value text-purple">{{ mascota.dueño }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <h3 class="text-2xl font-bold text-purple mb-4 flex items-center gap-2">
+            🩺 Registro de Atenciones
+        </h3>
+        
+        {% if citas %}
+            <div class="space-y-4">
+                {% for cita in citas %}
+                <div class="appointment-item shadow-sm">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <span class="text-sm font-bold text-purple">{{ cita.fecha_cita }}</span>
+                            <h4 class="text-lg font-bold text-slate-800">{{ cita.motivo|default:"Consulta General" }}</h4>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple text-white uppercase">
+                            {{ cita.estado }}
+                        </span>
+                    </div>
+                    <p class="text-gray-600 italic">"{{ cita.observaciones|default:"Sin observaciones registradas." }}"</p>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-16 bg-white rounded-3xl border-2 border-dashed border-gray-200">
+                <p class="text-gray-400 font-medium">No existen registros médicos previos para esta mascota.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="text-center mt-10 back-link">
+        <a href="{% url 'citas:listado_mascotas' %}" class="text-purple font-bold hover:underline">
+            ← Volver al Listado de Mascotas
+        </a>
+    </div>
+</div>
 {% endblock %}

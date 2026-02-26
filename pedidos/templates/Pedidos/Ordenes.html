@@ -2,148 +2,256 @@
 {% load static %}
 
 {% block content %}
-<div style="max-width: 1000px; margin: 80px auto 40px; padding: 0 20px;">
-  {% if pedido %}
-  <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 15px rgba(0,0,0,0.1);">
-    <!-- Encabezado -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid #4CAF50; padding-bottom: 1rem;">
-      <h2 style="color: #4CAF50; margin: 0;">Mi Carrito de Compras</h2>
+
+<style>
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    padding: 1rem;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal-box {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem 2.2rem;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .modal-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.3rem; font-size: 2.2rem; }
+  .modal-icon.warning { background: #fff8e1; }
+
+  .modal-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.6rem; color: #1a2e1f; }
+  .modal-msg { color: #6b7c6e; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.8rem; }
+  .modal-btns { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
+
+  .modal-btn { padding: 0.75rem 1.8rem; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; border: none; transition: transform 0.15s; text-decoration: none; display: inline-block; font-family: inherit; }
+  .modal-btn:hover { transform: translateY(-2px); }
+  .modal-btn.primary { background: linear-gradient(135deg, #4caf50, #2e7d32); color: white; }
+  .modal-btn.secondary { background: #f1f1f1; color: #555; }
+
+  .checkmark-circle { width: 80px; height: 80px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.3rem; }
+  .checkmark { width: 40px; height: 40px; stroke: #4caf50; stroke-width: 3; stroke-dasharray: 60; stroke-dashoffset: 60; animation: drawCheck 0.5s 0.2s ease forwards; fill: none; }
+  @keyframes drawCheck { to { stroke-dashoffset: 0; } }
+</style>
+
+<!-- MODAL 1: Confirmación -->
+<div class="modal-overlay" id="modalConfirmar">
+  <div class="modal-box">
+    <div class="modal-icon warning">🛒</div>
+    <h2 class="modal-title">¿Confirmar pedido?</h2>
+    <p class="modal-msg">Tu pedido será enviado al administrador. <br>Ten en cuenta que se te cobrara un precio moderado por tu domicilio.<br><strong>¿Deseas continuar?</strong></p>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="cerrarModal('modalConfirmar')">Cancelar</button>
+      <button class="modal-btn primary" id="btnConfirmarFinal" onclick="enviarPedido()">Sí, confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: Éxito -->
+<div class="modal-overlay" id="modalExito">
+  <div class="modal-box">
+    <div class="checkmark-circle">
+      <svg class="checkmark" viewBox="0 0 52 52">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M14 26l8 8 16-16"/>
+      </svg>
+    </div>
+    <h2 class="modal-title" style="color:#2e7d32;">¡Pedido Confirmado!</h2>
+    <p class="modal-msg">Tu pedido fue enviado al administrador exitosamente.<br>Pronto recibirás más información.</p>
+    <div class="modal-btns">
+      <a href="{% url 'lista' %}" class="modal-btn primary">Seguir Comprando</a>
+    </div>
+  </div>
+</div>
+
+<!-- FORM OCULTO -->
+<form id="formConfirmar" method="POST" action="{% url 'confirmar_pedido' %}" style="display:none;">
+  {% csrf_token %}
+</form>
+
+<div style="max-width:1000px; margin:80px auto 40px; padding:0 20px;">
+
+  {% if messages %}
+    {% for message in messages %}
+    <div style="padding:1rem; border-radius:8px; margin-bottom:1rem;
+      background:{% if message.tags == 'error' %}#ffebee{% else %}#e8f5e9{% endif %};
+      color:{% if message.tags == 'error' %}#c62828{% else %}#2e7d32{% endif %};
+      border-left:4px solid {% if message.tags == 'error' %}#f44336{% else %}#4caf50{% endif %};">
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  {% if pedido and detalles %}
+  <div style="background:white; padding:2rem; border-radius:10px; box-shadow:0 2px 15px rgba(0,0,0,0.1);">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:2px solid #4CAF50; padding-bottom:1rem;">
+      <h2 style="color:#4CAF50; margin:0;">Mi Carrito de Compras</h2>
       <div>
-        <span style="background: #4CAF50; color: white; padding: 0.5rem 1rem; border-radius: 5px; font-weight: bold;">
+        <span style="background:#4CAF50; color:white; padding:0.5rem 1rem; border-radius:5px; font-weight:bold;">
           Usuario: {{ request.user.username }}
         </span>
-        <span style="margin-left: 1rem; color: #666;">
-          Fecha: {{ pedido.fecha|date:"d/m/Y H:i" }}
-        </span>
+        <span style="margin-left:1rem; color:#666;">Fecha: {{ pedido.fecha|date:"d/m/Y H:i" }}</span>
       </div>
     </div>
-    
-    <!-- Estado del pedido -->
-    <div style="background: #E8F5E9; padding: 1rem; border-radius: 5px; margin-bottom: 2rem; text-align: center;">
-      <span style="font-weight: bold; font-size: 1.1rem;">Estado del Pedido: </span>
-      <span style="background: #4CAF50; color: white; padding: 0.3rem 1rem; border-radius: 20px; font-weight: bold;">
+
+    <div style="background:#E8F5E9; padding:1rem; border-radius:5px; margin-bottom:2rem; text-align:center;">
+      <span style="font-weight:bold; font-size:1.1rem;">Estado del Pedido: </span>
+      <span style="background:#4CAF50; color:white; padding:0.3rem 1rem; border-radius:20px; font-weight:bold;">
         {{ pedido.get_estado_display }}
       </span>
     </div>
-    
-    <!-- Lista de productos -->
-    <div>
-      <h3 style="color: #2c3e50; border-bottom: 2px solid #4CAF50; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">
-        Productos en tu carrito ({{ detalles|length }}):
-      </h3>
-      
-      {% if detalles %}
-        {% for detalle in detalles %}
-        <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; background: #fafafa;">
-          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-            <div style="flex: 1;">
-              <h4 style="color: #2c3e50; margin: 0 0 0.5rem 0; font-size: 1.2rem;">
-                {{ detalle.producto.nombre }}
-              </h4>
-              <p style="color: #666; margin: 0; font-size: 0.9rem;">
-                {{ detalle.producto.descripcion|truncatechars:100 }}
-              </p>
-            </div>
-            
-            <div style="text-align: right; min-width: 150px;">
-              <div style="font-size: 1.3rem; font-weight: bold; color: #4CAF50;">
-                ${{ detalle.producto.precio|floatformat:2 }}
-              </div>
-              <div style="font-size: 0.9rem; color: #7f8c8d; margin-top: 0.3rem;">
-                por unidad
-              </div>
-            </div>
-          </div>
-          
-          <div style="display: flex; justify-content: space-between; align-items: center; background: white; padding: 1rem; border-radius: 5px;">
-            <div style="display: flex; align-items: center;">
-              <strong style="margin-right: 1rem;">Cantidad:</strong>
-              <form method="POST" action="{% url 'actualizar_cantidad' detalle.id %}" style="display: flex; align-items: center;">
-                {% csrf_token %}
-                <input type="number" name="cantidad" value="{{ detalle.cantidad }}" min="1" max="{{ detalle.producto.stock|add:detalle.cantidad }}"
-                       style="width: 60px; padding: 0.3rem; text-align: center; border: 1px solid #ddd; border-radius: 4px; margin-right: 0.5rem;">
-                <button type="submit" style="background: #3498db; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;">
-                  Actualizar
-                </button>
-              </form>
-            </div>
-            
-            <div style="font-weight: bold; font-size: 1.1rem;">
-              <strong>Subtotal:</strong> ${{ detalle.subtotal|floatformat:2 }}
-            </div>
-          </div>
-          
-          <div style="margin-top: 1rem; text-align: right;">
-            <a href="{% url 'eliminar_detalle' detalle.id %}" 
-               onclick="return confirm('¿Estás seguro de eliminar este producto del carrito?')"
-               style="background: #e74c3c; color: white; padding: 0.5rem 1.5rem; text-decoration: none; border-radius: 5px; font-weight: bold;">
-              Eliminar del Carrito
-            </a>
-          </div>
-        </div>
-        {% endfor %}
-      {% else %}
-        <div style="text-align: center; padding: 3rem; color: #7f8c8d; background: #f9f9f9; border-radius: 8px;">
-          <p style="font-size: 1.2rem; margin-bottom: 1rem;">Tu carrito está vacío</p>
-          <a href="{% url 'lista' %}" style="color: #4CAF50; text-decoration: underline;">
-            Ir a la tienda para agregar productos
-          </a>
-        </div>
-      {% endif %}
-    </div>
 
-    <!-- Resumen total -->
-    {% if detalles %}
-    <div style="background: #4CAF50; color: white; padding: 1.5rem; border-radius: 8px; margin: 2rem 0;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="color:#2c3e50; border-bottom:2px solid #4CAF50; padding-bottom:0.5rem; margin-bottom:1.5rem;">
+      Productos en tu carrito ({{ detalles|length }}):
+    </h3>
+
+    {% for detalle in detalles %}
+    <div style="border:1px solid #e0e0e0; border-radius:8px; padding:1.5rem; margin:1rem 0; background:#fafafa;">
+      <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:1rem;">
+        <div style="flex:1;">
+          <h4 style="color:#2c3e50; margin:0 0 0.5rem 0; font-size:1.2rem;">{{ detalle.producto.nombre }}</h4>
+          <p style="color:#666; margin:0; font-size:0.9rem;">{{ detalle.producto.descripcion|truncatechars:100 }}</p>
+        </div>
+        <div style="text-align:right; min-width:150px;">
+          <div style="font-size:1.3rem; font-weight:bold; color:#4CAF50;">${{ detalle.producto.precio|floatformat:2 }}</div>
+          <div style="font-size:0.9rem; color:#7f8c8d; margin-top:0.3rem;">por unidad</div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:1rem; border-radius:5px;">
+        <div style="display:flex; align-items:center;">
+          <strong style="margin-right:1rem;">Cantidad:</strong>
+          <form method="POST" action="{% url 'actualizar_cantidad' detalle.id %}" style="display:flex; align-items:center;">
+            {% csrf_token %}
+            <input type="number" name="cantidad" value="{{ detalle.cantidad }}" min="1"
+                   max="{{ detalle.producto.stock|add:detalle.cantidad }}"
+                   style="width:60px; padding:0.3rem; text-align:center; border:1px solid #ddd; border-radius:4px; margin-right:0.5rem;">
+            <button type="submit" style="background:#3498db; color:white; border:none; padding:0.3rem 0.8rem; border-radius:4px; cursor:pointer;">
+              Actualizar
+            </button>
+          </form>
+        </div>
+        <div style="font-weight:bold; font-size:1.1rem;">
+          <strong>Subtotal:</strong> ${{ detalle.subtotal|floatformat:2 }}
+        </div>
+      </div>
+
+      <div style="margin-top:1rem; text-align:right;">
+        <a href="{% url 'eliminar_detalle' detalle.id %}"
+           onclick="return confirm('¿Eliminar este producto del carrito?')"
+           style="background:#e74c3c; color:white; padding:0.5rem 1.5rem; text-decoration:none; border-radius:5px; font-weight:bold;">
+          Eliminar del Carrito
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div style="background:#4CAF50; color:white; padding:1.5rem; border-radius:8px; margin:2rem 0;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <h3 style="margin: 0; font-size: 1.5rem;">Total del Pedido:</h3>
-          <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Incluye todos los productos</p>
+          <h3 style="margin:0; font-size:1.5rem;">Total del Pedido:</h3>
+          <p style="margin:0.5rem 0 0 0; opacity:0.9;">Incluye todos los productos</p>
         </div>
-        <div style="text-align: right;">
-          <div style="font-size: 2.5rem; font-weight: bold;">${{ pedido.total|floatformat:2 }}</div>
-        </div>
+        <div style="font-size:2.5rem; font-weight:bold;">${{ pedido.total|floatformat:2 }}</div>
       </div>
     </div>
 
-    <!-- Botones de acción -->
-    <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
-      <a href="{% url 'lista' %}" 
-         style="background: #66BB6A; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+    <div style="display:flex; justify-content:space-between; margin-top:2rem;">
+      <a href="{% url 'lista' %}" style="background:#66BB6A; color:white; padding:1rem 2rem; text-decoration:none; border-radius:8px; font-weight:bold;">
         ← Seguir Comprando
       </a>
-      
-      {% if detalles %}
-      <button style="background: #FF9800; color: white; padding: 1rem 2rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1.1rem;">
+      <button type="button" onclick="abrirModalConfirmar()"
+              style="background:#FF9800; color:white; padding:1rem 2rem; border:none; border-radius:8px; font-weight:bold; cursor:pointer; font-size:1.1rem;">
         Proceder al Pago
       </button>
-      {% endif %}
     </div>
-    {% endif %}
   </div>
+
   {% else %}
-  <!-- Si no hay pedido activo -->
-  <div style="text-align: center; padding: 4rem; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <p style="font-size: 1.5rem; color: #7f8c8d; margin-bottom: 1.5rem;">No tienes pedidos activos</p>
-    <a href="{% url 'lista' %}" 
-       style="background: #4CAF50; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 1.1rem;">
+  <!-- CARRITO VACÍO -->
+  <div style="text-align:center; padding:4rem; background:white; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1);">
+    {% if request.GET.confirmado %}
+      <div style="font-size:4rem; margin-bottom:1rem;">✅</div>
+      <h2 style="color:#2e7d32; font-size:1.8rem; margin-bottom:0.5rem;">¡Pedido Enviado!</h2>
+      <p style="color:#666; margin-bottom:2rem;">Tu pedido fue enviado al administrador exitosamente.</p>
+    {% else %}
+      <p style="font-size:1.5rem; color:#7f8c8d; margin-bottom:1.5rem;">Tu carrito está vacío</p>
+    {% endif %}
+    <a href="{% url 'lista' %}" style="background:#4CAF50; color:white; padding:1rem 2rem; text-decoration:none; border-radius:8px; font-weight:bold; display:inline-block; font-size:1.1rem;">
       Ir a Productos
     </a>
   </div>
   {% endif %}
+
 </div>
 
-<!-- Estilos adicionales -->
-<style>
-  input[type="number"]:focus {
-    border-color: #4CAF50;
-    outline: none;
+<script>
+  function abrirModalConfirmar() {
+    document.getElementById('modalConfirmar').classList.add('active');
   }
-  
-  button:hover, a:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-    transition: all 0.3s ease;
+
+  function cerrarModal(id) {
+    document.getElementById(id).classList.remove('active');
   }
-</style>
+
+  function enviarPedido() {
+    const btn = document.getElementById('btnConfirmarFinal');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    const form = document.getElementById('formConfirmar');
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(data => {
+      cerrarModal('modalConfirmar');
+      if (data.success) {
+        document.getElementById('modalExito').classList.add('active');
+        // ✅ Recargar con ?confirmado=1 para vaciar el carrito en la vista
+        setTimeout(() => {
+          window.location.href = window.location.pathname + '?confirmado=1';
+        }, 2500);
+      } else {
+        alert('Error: ' + (data.error || 'Inténtalo de nuevo'));
+        btn.disabled = false;
+        btn.textContent = 'Sí, confirmar';
+      }
+    })
+    .catch(() => {
+      cerrarModal('modalConfirmar');
+      document.getElementById('modalExito').classList.add('active');
+      setTimeout(() => {
+        window.location.href = window.location.pathname + '?confirmado=1';
+      }, 2500);
+    });
+  }
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) this.classList.remove('active');
+    });
+  });
+</script>
+
 {% endblock content %}

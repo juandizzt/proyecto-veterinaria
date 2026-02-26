@@ -234,6 +234,52 @@
                 font-size: 1.8rem;
             }
         }
+
+        /* Contenedor principal (la barra verde) */
+.nav-user-container {
+    background-color: #63b965; /* El verde exacto de la imagen */
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-user-content {
+    display: flex;
+    align-items: center;
+    gap: 25px; /* Espacio entre el texto y el botón */
+    font-family: Arial, sans-serif;
+}
+
+/* Texto de "Bienvenido" */
+.welcome-text {
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+/* El nombre del usuario (enlace) */
+.user-name {
+    color: white;
+    text-decoration: none; /* Quita el subrayado */
+    font-weight: normal;
+    margin-left: 20px;
+}
+
+/* Botón de Cerrar Sesión */
+.btn-logout {
+    background-color: rgba(255, 255, 255, 0.2); /* Fondo blanco semitransparente */
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px; /* Bordes redondeados */
+    font-size: 16px;
+    transition: background 0.3s ease;
+}
+
+.btn-logout:hover {
+    background-color: rgba(255, 255, 255, 0.3); /* Se aclara un poco al pasar el mouse */
+}
     </style>
 </head>
 <body>
@@ -254,6 +300,19 @@
                 <a href="{% url 'lista' %}">Productos</a>
                 <a href="{% url 'citas:lista_citas' %}">Citas</a>
             </div>
+
+    <div class="nav-user-container">
+                {% if user.is_authenticated %}
+            <div class="nav-user-content">
+                <span class="welcome-text">
+                    Bienvenido <a href="{% url 'dashboard' %}" class="user-name">{{ user.username }}</a>
+                </span>
+                    <a href="{% url 'logout' %}" class="btn-logout">
+                        Cerrar Sesión
+                    </a>
+            </div>
+        {% endif %}
+    </div>
         </nav>
     </header>
 

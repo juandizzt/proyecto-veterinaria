@@ -51,7 +51,7 @@
                             <a href="{% url 'citas:detalle_cita' cita.pk %}" 
                                class="btn" 
                                style="padding: 5px 10px; font-size: 0.85rem;">
-                                👁️ Ver
+                                 Ver
                             </a>
                             <form method="post" action="{% url 'citas:cambiar_estado_cita' cita.pk %}" 
                                   style="display: inline;">
@@ -75,17 +75,17 @@
     </div>
     {% else %}
     <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; margin: 20px 0;">
-        <p style="font-size: 1.2rem; color: #666;">🎉 ¡No hay citas programadas para hoy!</p>
+        <p style="font-size: 1.2rem; color: #666;"> ¡No hay citas programadas para hoy!</p>
         <p>Puedes revisar las citas pendientes o el historial completo.</p>
     </div>
     {% endif %}
     
     <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
-        <a href="{% url 'citas:citas_pendientes' %}" class="btn">📋 Ver Citas Pendientes</a>
+        <a href="{% url 'citas:citas_pendientes' %}" class="btn"> Ver Citas Pendientes</a>
         {% if user.es_admin %}
-        <a href="{% url 'citas:historial_citas' %}" class="btn">📊 Ver Historial Completo</a>
+        <a href="{% url 'citas:historial_citas' %}" class="btn"> Ver Historial Completo</a>
         {% endif %}
-        <a href="{% url 'citas:lista_citas' %}" class="btn">↩️ Volver a Mis Citas</a>
+        <a href="{% url 'citas:lista_citas' %}" class="btn"> Volver a Mis Citas</a>
     </div>
 </div>
 {% endblock %}

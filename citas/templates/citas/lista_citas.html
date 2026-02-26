@@ -1,61 +1,195 @@
-{% extends 'citas/base_citas.html' %} {% block title %}Mis Citas - Veterinaria
-{%endblock %} {% block content %}
-<div class="card">
-  <div
-    style="
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    "
-  >
-    <h2>Mis Citas Agendadas</h2>
-    <a href="{% url 'citas:crear_cita' %}" class="btn btn-success"
-      > Agendar Nueva Cita</a
-    >
-  </div>
+{% extends 'citas/base_citas.html' %}
 
-  {% if citas %} {% for cita in citas %}
-  <div class="cita-card {% if cita.es_pasada %}cita-pasada{% endif %}">
-    {% if cita.es_pasada %}
-    <div
-      style="
-        background: #f8d7da;
-        color: #721c24;
-        padding: 5px;
-        border-radius: 3px;
-        margin-bottom: 10px;
-      "
-    >
-      ⚠️ Cita pasada
+{% block title %}Mis Citas - Veterinaria La Pradera{% endblock %}
+
+{% block content %}
+<style>
+    /* Contenedor de la página */
+    .citas-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Encabezado de sección */
+    .header-seccion {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border-left: 6px solid #4caf50;
+    }
+
+    .header-seccion h2 {
+        color: #2e7d32;
+        margin: 0;
+        font-size: 1.6rem;
+    }
+
+    /* Tarjeta de cada cita */
+    .cita-card-moderna {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        transition: transform 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid #eee;
+    }
+
+    .cita-card-moderna:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Estilo para citas pasadas */
+    .cita-pasada {
+        opacity: 0.7;
+        background: #fdfdfd;
+        border-left: 6px solid #95a5a6 !important;
+    }
+
+    .badge-pasada {
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 15px;
+    }
+
+    /* Información de la mascota */
+    .cita-info h3 {
+        color: #4caf50;
+        margin-bottom: 12px;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .info-item {
+        font-size: 0.95rem;
+        color: #555;
+    }
+
+    .info-item strong {
+        color: #333;
+        display: block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: #888;
+    }
+
+    /* Botonera de acciones */
+    .cita-acciones {
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    .btn-cita {
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        text-align: center;
+    }
+
+    .btn-ver { background: #e8f5e9; color: #2e7d32; }
+    .btn-ver:hover { background: #c8e6c9; }
+
+    .btn-edit { background: #fff3e0; color: #ef6c00; }
+    .btn-edit:hover { background: #ffe0b2; }
+
+    .btn-cancel { background: #fee2e2; color: #b91c1c; }
+    .btn-cancel:hover { background: #fecaca; }
+
+    .btn-nueva {
+        background: #4caf50;
+        color: white;
+        box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+    }
+
+    /* Estado vacío */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="citas-container">
+    <div class="header-seccion">
+        <h2>Mis Citas Agendadas</h2>
+        <a href="{% url 'citas:crear_cita' %}" class="btn-cita btn-nueva">Agendar Nueva Cita</a>
     </div>
+
+    {% if citas %}
+        {% for cita in citas %}
+        <div class="cita-card-moderna {% if cita.es_pasada %}cita-pasada{% endif %}" style="border-left: 6px solid #4caf50;">
+            
+            {% if cita.es_pasada %}
+            <div class="badge-pasada"> Esta cita ya ocurrió</div>
+            {% endif %}
+
+            <div class="cita-info">
+                <h3> {{ cita.mascota }} <small style="color: #888; font-size: 0.9rem;">({{ cita.tipo_mascota }})</small></h3>
+                
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Fecha y Hora</strong>
+                         {{ cita.fecha_cita }} |  {{ cita.hora_cita }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Servicio</strong>
+                        {{ cita.get_tipo_servicio_display }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Contacto</strong>
+                         {{ cita.telefono }}
+                    </div>
+                </div>
+
+                <div class="info-item" style="margin-bottom: 20px;">
+                    <strong>Motivo de consulta</strong>
+                    <p style="color: #666; font-style: italic;">"{{ cita.descripcion|truncatewords:20 }}"</p>
+                </div>
+            </div>
+
+            <div class="cita-acciones">
+                <a href="{% url 'citas:detalle_cita' cita.pk %}" class="btn-cita btn-ver">Detalles</a>
+                <a href="{% url 'citas:editar_cita' cita.pk %}" class="btn-cita btn-edit">Editar</a>
+                <a href="{% url 'citas:eliminar_cita' cita.pk %}" class="btn-cita btn-cancel">Cancelar</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div style="font-size: 60px; margin-bottom: 20px;"></div>
+            <h3 style="color: #2e7d32; margin-bottom: 10px;">¡Ups! No tienes citas aún</h3>
+            <p style="color: #888; margin-bottom: 30px;">Parece que tus mascotas no tienen visitas programadas próximamente.</p>
+            <a href="{% url 'citas:crear_cita' %}" class="btn-cita btn-nueva" style="padding: 15px 30px; font-size: 1.1rem;">Agendar mi primera cita</a>
+        </div>
     {% endif %}
-
-    <h3>{{ cita.mascota }} ({{ cita.tipo_mascota }})</h3>
-    <p>
-      <strong> Fecha:</strong> {{ cita.fecha_cita }}  {{ cita.hora_cita }}
-    </p>
-    <p><strong> Servicio:</strong> {{ cita.get_tipo_servicio_display }}</p>
-    <p><strong> Teléfono:</strong> {{ cita.telefono }}</p>
-    <p><strong> Motivo:</strong> {{ cita.descripcion|truncatewords:20 }}</p>
-
-    <div style="margin-top: 15px">
-      <a href="{% url 'citas:detalle_cita' cita.pk %}" class="btn"
-        > Ver Detalles</a
-      >
-      <a href="{% url 'citas:editar_cita' cita.pk %}" class="btn"> Editar</a>
-      <a href="{% url 'citas:eliminar_cita' cita.pk %}" class="btn btn-danger"
-        > Cancelar</a
-      >
-    </div>
-  </div>
-  {% endfor %} {% else %}
-  <div class="card">
-    <p>No tienes citas agendadas.</p>
-    <a href="{% url 'citas:crear_cita' %}" class="btn btn-success"
-      >Agendar tu primera cita</a
-    >
-  </div>
-  {% endif %}
 </div>
 {% endblock %}

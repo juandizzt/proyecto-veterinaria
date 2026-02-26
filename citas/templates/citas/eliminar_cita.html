@@ -1,31 +1,46 @@
 {% extends 'citas/base_citas.html' %}
 
-{% block title %}Cancelar Cita - Veterinaria{% endblock %}
+{% block title %}Cancelar Cita - La Pradera{% endblock %}
 
 {% block content %}
-<div class="card">
-    <h2> Cancelar Cita</h2>
-    
-    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 20px; margin: 20px 0;">
-        <h3 style="color: #856404;"> ¿Estás seguro de que quieres cancelar esta cita?</h3>
+<style>
+    .cancel-wrapper { max-width: 550px; margin: 40px auto; }
+    .card-cancel {
+        background: white; padding: 40px; border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 8px solid #e74c3c;
+        text-align: center;
+    }
+    .warning-box {
+        background: #fff5f5; border: 1px solid #feb2b2;
+        padding: 20px; border-radius: 12px; margin: 20px 0;
+        text-align: left;
+    }
+    .btn-confirm-delete {
+        background: #e74c3c; color: white; border: none;
+        padding: 15px; border-radius: 12px; width: 100%;
+        font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s;
+    }
+    .btn-confirm-delete:hover { background: #c0392b; transform: translateY(-2px); }
+    .link-return { display: inline-block; margin-top: 20px; color: #718096; text-decoration: none; }
+</style>
+
+<div class="cancel-wrapper">
+    <div class="card-cancel">
+        <h2 style="color: #c53030;">¿Confirmas la cancelación?</h2>
+        <p style="color: #4a5568;">Esta acción eliminará permanentemente la cita de la base de datos.</p>
         
-        <div style="margin: 15px 0; padding: 15px; background: white; border-radius: 5px;">
-            <p><strong>Mascota:</strong> {{ object.mascota }} ({{ object.tipo_mascota }})</p>
-            <p><strong>Fecha:</strong> {{ object.fecha_cita }} a las {{ object.hora_cita }}</p>
-            <p><strong>Servicio:</strong> {{ object.get_tipo_servicio_display }}</p>
-            <p><strong>Motivo:</strong> {{ object.descripcion|truncatewords:10 }}</p>
+        <div class="warning-box">
+            <p><strong>🐾 Mascota:</strong> {{ object.mascota }}</p>
+            <p><strong>📅 Fecha:</strong> {{ object.fecha_cita }} a las {{ object.hora_cita }}</p>
+            <p><strong>🏥 Servicio:</strong> {{ object.get_tipo_servicio_display }}</p>
         </div>
 
-        <p style="color: #856404;">Esta acción no se puede deshacer.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn-confirm-delete">✅ Sí, confirmar cancelación</button>
+        </form>
+        
+        <a href="{% url 'citas:lista_citas' %}" class="link-return">❌ No, volver a mis citas</a>
     </div>
-
-    <form method="post">
-        {% csrf_token %}
-        <div style="display: flex; gap: 10px;">
-            <button type="submit" class="btn btn-danger">✅ Sí, Cancelar Cita</button>
-            <a href="{% url 'citas:detalle_cita' object.pk %}" class="btn">↩️ No, Volver al Detalle</a>
-            <a href="{% url 'citas:lista_citas' %}" class="btn">📋 Volver a la Lista</a>
-        </div>
-    </form>
 </div>
 {% endblock %}
